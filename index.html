@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Social Radar V4.0</title>
+    <style>
+        /* --- Masterpiece Gold Standard Styling --- */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #1a1a1a;
+            color: #d4af37; /* Masterpiece Gold */
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* --- The Responsive Layout Container --- */
+        .main-container {
+            display: flex;
+            flex: 1;
+            flex-direction: row; /* Desktop: Side-by-side */
+        }
+
+        /* Left Column: The Map (Expanded) */
+        .chart-section {
+            flex: 2.5; /* Increased from 1.5 to 2.5 to give it way more room */
+            padding: 10px; /* Reduced padding to maximize space */
+            background: white;
+            border-right: 1px solid #ddd;
+        }
+
+        /* Right Column: The Cultural Dashboard (Slimmed down) */
+        .info-section {
+            flex: 1; /* Keep this at 1 */
+            padding: 20px;
+            background: #fafafa;
+            max-width: 350px; /* Optional: Sets a "hard limit" so it doesn't get too wide on big screens */
+        }
+
+        /* --- Audio Player Styling --- */
+        .audio-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #d4af37;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .audio-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        audio {
+            width: 100%;
+        }
+
+        #ai-summary {
+            font-weight: bold; /* This makes the AI's explanation thick and readable */
+            line-height: 1.6;  /* This adds a little space between lines for easier reading */
+        }
+
+        /* --- Responsive Magic (Mobile Stacking) --- */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column; /* Mobile: Stacked vertically */
+            }
+          
+            .chart-section {
+                height: 70vh; /* 'vh' means 'View Height'. This uses 70% of your phone screen for the map! */
+                border-bottom: 1px solid #ddd;
+            }
+            .info-section {
+                flex: none; /* Prevents the info section from trying to fight for space */
+            }
+        }       
+        
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Japanese Social Radar V4.0</h1>
+    <p>Reading the "Invisible Air" with Generative AI</p>
+</header>
+
+<div class="main-container">
+    <section class="chart-section">
+        <iframe src="https://public.flourish.studio/visualisation/28074057/embed" title="Social Radar Map"></iframe>
+    </section>
+
+    <section class="info-section">
+        <div id="instruction-note">
+            <h3>Select a scenario on the map</h3>
+            <p>Click a slice of the radar to hear the phrase and see the AI cultural analysis.</p>
+        </div>
+
+        <div class="audio-card">
+            <span class="audio-label">🔊 Pronunciation & Nuance:</span>
+            <audio id="radar-audio" controls src="audio/placeholder.wav">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+
+        <div class="analysis-card">
+            <h3>AI Cultural Summary</h3>
+            <p id="ai-summary">Waiting for selection...</p>
+        </div>
+    </section>
+</div>
+
+<script>
+    // 1. The Master Data Map (Corrected & Combined)
+    const radarData = {
+        // Refusal & Delay
+        "Zensho shimasu": { audio: "zensho.wav", summary: "A strategic 'no'. It literally means 'I will handle this as well as I can,' but socially it signals that while they heard you, no action is likely to follow." },
+        "Kentou kadai to sasete kudasai": { audio: "kentou.wav", summary: "A phrase used to 'shelve' an idea. It buys time and signals that the proposal is currently not a priority or is being politely rejected." },
+        "Chotto muzukashii...": { audio: "muzukashii.wav", summary: "The 'Invisible Wall'. In Japan, 'difficult' almost always means 'impossible.' This is a firm but polite rejection." },
+        "Bubuzuke ikaga desu ka?": { audio: "bubuzuke.wav", summary: "The Kyoto-style exit. It sounds like hospitality, but it's a social cue that the meeting is over and you should leave now." },
+        "Mae-muki ni kentou shimasu": { audio: "maemuki.wav", summary: "The 'eternal thinking' phase. It avoids a direct 'no' by promising future consideration that rarely arrives." },
+
+        // Power Dynamics
+        "Yoroshiku ne": { audio: "yoroshiku.wav", summary: "The hand-off. When spoken by a senior, it means 'This is now your responsibility. Don't let me down.'" },
+        "Go-iken o ukagaitai": { audio: "goiken.wav", summary: "Seeking consensus for a pre-made decision. They aren't asking for a new idea, but for your agreement to maintain 'Wa'." },
+        "Sekinin o tsuikan...": { audio: "tsuikan.wav", summary: "The executive apology. Acknowledges that a mistake happened without taking personal blame or offering a resignation." },
+        "Isoganakute ii desu": { audio: "isoganakute.wav", summary: "The pressure play. It sounds patient, but it often implies 'I'm watching your speed.' Use with caution." },
+
+        // Conflict & Criticism
+        "Aru imi de...": { audio: "aruimi.wav", summary: "The 'But'. Signals that a critique or a difficult truth is about to follow. Prepare for a shift in tone." },
+        "Gokai o osorezu ni...": { audio: "gokai.wav", summary: "The direct hit. 'Without fear of being misunderstood' means 'I am about to be blunt and possibly rude.'" },
+        "Kore wa kore de...": { audio: "korewa.wav", summary: "The backhanded compliment. Suggests that while the current thing is okay, it's not what was expected or desired." },
+        "Kiku dake kikimasu": { audio: "kikudake.wav", summary: "The dead end. 'I'll listen,' but with zero intention of changing my mind or taking action." },
+
+        // Harmony (Wa)
+        "Ma, tamatama desu": { audio: "tamatama.wav", summary: "Protective humility. Attributing success to 'luck' to avoid standing out and to protect the harmony of the group." },
+        "Ma-a, sou desu ne...": { audio: "sou-desu-ne.wav", summary: "The stalling breath. Indicates disagreement or discomfort that they aren't ready to voice directly yet." },
+        "Wakarimashita": { audio: "wakarimashita.wav", summary: "Acknowledgment, not agreement. It simply means 'I have received the sound of your words.'" },
+        "Iro-iro arimashite": { audio: "iro-iro.wav", summary: "The social shield. Used to avoid explaining a complicated or negative situation. Respect the boundary and don't ask more." },
+
+        // Ritual & Negotiation
+        "O-isogashii tokoro...": { audio: "oisogashii.wav", summary: "The polite intrusion. Essential lubrication before asking for someone's time or a favor." },
+        "Kou-iu mono desu ga": { audio: "kouiu.wav", summary: "The formal anchor. Used during the exchange of business cards to establish identity and hierarchy." },
+        "Benkyou sasete kudasai": { audio: "benkyou.wav", summary: "The buyer's plea. Literally 'Let me learn,' but in a trade context, it means 'Give me a lower price.'" },
+        "Sou iu koto nara...": { audio: "souiu.wav", summary: "The reluctant concession. 'If that's the case...' signals that they are giving in, but with some lingering reservation." }
+    };
+
+    // 2. The Bridge: Listen for Flourish clicks
+    window.addEventListener('message', function(e) {
+        if (e.data && e.data.type === 'flourish-click') {
+            const clickedName = e.data.name; 
+            const data = radarData[clickedName];
+
+            if (data) {
+                // Update Audio
+                const player = document.getElementById('radar-audio');
+                player.src = 'audio/' + data.audio;
+                player.load(); // Refresh the player for the new file
+                player.play();
+
+                // Update Text
+                document.getElementById('ai-summary').innerText = data.summary;
+                
+                // Optional: Console log to help you debug in Chigasaki!
+                console.log("Playing air for: " + clickedName);
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
