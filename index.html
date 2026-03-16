@@ -16,12 +16,22 @@
             min-height: 100vh;
         }
 
+       /* --- Header: Slimmed for Mobile --- */
         header {
             background-color: #1a1a1a;
-            color: #d4af37; /* Masterpiece Gold */
-            padding: 20px;
+            color: #d4af37;
+            padding: 10px; /* Reduced from 20px */
             text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        header h1 {
+            font-size: 1.2rem; /* Smaller title */
+            margin: 5px 0;
+        }
+s
+        header p {
+            font-size: 0.8rem;
+            margin: 0;
         }
 
         /* --- The Responsive Layout Container --- */
@@ -74,17 +84,22 @@
         }
 
         /* --- Responsive Magic (Mobile Stacking) --- */
+       /* --- Layout Adjustments --- */
         @media (max-width: 768px) {
-            .main-container {
-                flex-direction: column; /* Mobile: Stacked vertically */
-            }
-          
             .chart-section {
-                height: 70vh; /* 'vh' means 'View Height'. This uses 70% of your phone screen for the map! */
-                border-bottom: 1px solid #ddd;
+                height: 65vh; /* Force the map to take 65% of the screen height */
+                padding: 5px; /* Minimal padding */
             }
+
             .info-section {
-                flex: none; /* Prevents the info section from trying to fight for space */
+                padding: 15px;
+                gap: 10px;
+                flex: none; /* Don't let it grow and push the map up */
+            }
+
+            .analysis-card h3 {
+                font-size: 1rem;
+                margin-top: 0;
             }
         }       
         
