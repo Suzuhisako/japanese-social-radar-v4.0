@@ -15,57 +15,61 @@
             flex-direction: column;
             min-height: 100vh;
         }
-
-       /* --- Header: Slimmed for Mobile --- */
+    
+        /* --- Header: Slimmed for Mobile --- */
         header {
             background-color: #1a1a1a;
             color: #d4af37;
-            padding: 10px; /* Reduced from 20px */
+            padding: 10px; 
             text-align: center;
         }
-
+    
         header h1 {
-            font-size: 1.2rem; /* Smaller title */
+            font-size: 1.2rem; 
             margin: 5px 0;
         }
-s
+    
         header p {
             font-size: 0.8rem;
             margin: 0;
         }
-
+    
         /* --- The Responsive Layout Container --- */
         .main-container {
             display: flex;
             flex: 1;
             flex-direction: row; /* Desktop: Side-by-side */
         }
-
-        /* Left Column: The Map (Expanded) */
+    
+        /* Left Column: The Map (Dominant) */
         .chart-section {
-            flex: 2.5; /* Increased from 1.5 to 2.5 to give it way more room */
-            padding: 10px; /* Reduced padding to maximize space */
+            flex: 3; /* Increased from 2.5 to 3 to maximize map width */
+            padding: 5px; 
             background: white;
             border-right: 1px solid #ddd;
+            display: flex; /* Helps center the chart inside */
+            align-items: center;
         }
-
-        /* Right Column: The Cultural Dashboard (Slimmed down) */
+    
+        /* Right Column: The Cultural Dashboard */
         .info-section {
-            flex: 1; /* Keep this at 1 */
+            flex: 1; 
             padding: 20px;
             background: #fafafa;
-            max-width: 350px; /* Optional: Sets a "hard limit" so it doesn't get too wide on big screens */
+            max-width: 400px;
+            overflow-y: auto; /* Adds scrolling if text is long */
         }
-
-        /* --- Audio Player Styling --- */
+    
+        /* --- Audio & Text Styling --- */
         .audio-card {
             background: #fff;
-            padding: 20px;
+            padding: 15px;
             border-radius: 8px;
             border-left: 5px solid #d4af37;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
         }
-
+    
         .audio-label {
             font-weight: bold;
             display: block;
@@ -73,40 +77,39 @@ s
             font-size: 0.9rem;
             color: #666;
         }
-
+    
         audio {
             width: 100%;
         }
-
+    
         #ai-summary {
-            font-weight: bold; /* This makes the AI's explanation thick and readable */
-            line-height: 1.6;  /* This adds a little space between lines for easier reading */
+            font-weight: bold; 
+            line-height: 1.6;
+            font-size: 1.05rem; /* Slightly larger for better readability */
         }
-
+    
         /* --- Responsive Magic (Mobile Stacking) --- */
-       /* --- Layout Adjustments --- */
         @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column; /* Stacked vertically */
+            }
+    
             .chart-section {
-                height: 65vh; /* Force the map to take 65% of the screen height */
-                padding: 5px; /* Minimal padding */
+                height: 75vh; /* Force the map to take up most of the screen */
+                border-right: none;
+                border-bottom: 2px solid #d4af37; /* Visual gold separator */
             }
-
+    
             .info-section {
-                padding: 15px;
-                gap: 10px;
-                flex: none; /* Don't let it grow and push the map up */
+                flex: none;
+                padding: 20px;
+                max-width: 100%;
             }
-
-            .analysis-card h3 {
-                font-size: 1rem;
-                margin-top: 0;
-            }
-        }       
-        
-
-        iframe {
-            width: 100%;
-            height: 100%;
+        }
+    
+        iframe, .flourish-embed {
+            width: 100% !important;
+            height: 100% !important;
             border: none;
         }
     </style>
