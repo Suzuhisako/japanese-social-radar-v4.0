@@ -13,14 +13,14 @@
             color: #333;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
+            height: 100vh; /* Changed from min-height to height */
+            overflow: hidden; /* Prevent double scrolling on PC */
         }
 
         header {
             background-color: #1a1a1a;
             color: #d4af37;
-            padding: 8px;
+            padding: 8px; /* Extra slim */
             text-align: center;
             flex-shrink: 0;
         }
@@ -35,6 +35,7 @@
             overflow: hidden;
         }
 
+        /* Map gets the lion's share */
         .chart-section {
             flex: 3;
             background: white;
@@ -50,13 +51,25 @@
             overflow-y: auto;
         }
 
+        /* MOBILE OPTIMIZATION */
         @media (max-width: 768px) {
-            body { overflow: auto; }
+            body { overflow: auto; } /* Allow scrolling on mobile */
             .main-container { flex-direction: column; }
-            .chart-section { height: 65vh; width: 100vw; flex: none; }
-            .info-section { max-width: 100%; border-left: none; border-top: 2px solid #d4af37; }
+            
+            .chart-section {
+                height: 60vh; /* 60% of the screen height just for the map */
+                width: 100vw;
+                flex: none;
+            }
+
+            .info-section {
+                max-width: 100%;
+                border-left: none;
+                border-top: 2px solid #d4af37;
+            }
         }
 
+        /* Ensure the Iframe takes every single pixel */
         iframe {
             position: absolute;
             top: 0;
@@ -86,12 +99,9 @@
     </header>
 
     <div class="main-container">
-        <iframe 
-            src="https://public.flourish.studio/visualisation/28074057/embed" 
-            title="Social Radar Map"
-            sandbox="allow-same-origin allow-scripts allow-forms"
-            allow="autoplay">
-        </iframe>
+        <section class="chart-section">
+            <iframe src="https://public.flourish.studio/visualisation/28074057/embed" title="Social Radar Map"></iframe>
+        </section>
 
         <section class="info-section">
             <div id="instruction-note">
@@ -111,9 +121,12 @@
                 <p id="ai-summary">Waiting for selection...</p>
             </div>
         </section>
+
+        
     </div>
 
     <script>
+        // 1. Your Master Data
         const radarData = {
             "Zenshoshimasu": { audio: "zensho.wav", summary: "A strategic 'no'. Suggests effort without promising a result." },
             "Kentoukadaito": { audio: "kentou.wav", summary: "A polite way to shelve an idea indefinitely." },
@@ -127,8 +140,8 @@
             "Gokaioosorezu": { audio: "gokai.wav", summary: "I am about to be blunt and possibly rude." },
             "Korewakorede": { audio: "korewa.wav", summary: "A backhanded compliment; it's not what was wanted." },
             "Kikudakekikimasu": { audio: "kikudake.wav", summary: "I will listen, but I won't change my mind." },
-            "Maatamatama": { audio: "tamatama.wav", summary: "Humility used to protect group harmony." },
-            "Maasoudesune": { audio: "sou-desu-ne.wav", summary: "Stalling because they disagree but won't say it yet." },
+            "Maa,tamatama": { audio: "tamatama.wav", summary: "Humility used to protect group harmony." },
+            "Maa,soudesune": { audio: "sou-desu-ne.wav", summary: "Stalling because they disagree but won't say it yet." },
             "Wakarimashita": { audio: "wakarimashita.wav", summary: "I heard you (does not mean I agree)." },
             "Iroiroarimashite": { audio: "iro-iro.wav", summary: "A boundary marker. Don't ask for more details." },
             "Oisogashiitokoro": { audio: "oisogashii.wav", summary: "Polite lubrication before a request." },
@@ -137,31 +150,43 @@
             "Souiukotonara": { audio: "souiu.wav", summary: "A reluctant concession with reservations." }
         };
 
+        // 2. The Robust Bridge
         window.addEventListener('message', function(e) {
-            if (e.data && (e.data.type === 'flourish-click' || e.data.action === 'click')) {
-                const rawName = e.data.name || (e.data.data ? e.data.data.name : "NAME_NOT_FOUND");
-                
-                // FUZZY MATCH LOGIC: Removes spaces, dots, and commas to find the key
-                const cleanName = rawName.replace(/[\s\.,]/g, ''); 
-                
-                alert("Bridge detected: [" + rawName + "]\nSearching for: [" + cleanName + "]");
+            // 1. Alert that a message was received at all
+            // alert("Message received from Flourish!"); 
 
-                if (cleanName && radarData[cleanName]) {
-                    const data = radarData[cleanName];
+            if (e.data && (e.data.type === 'flourish-click' || e.data.action === 'click')) {
+                
+                // 2. Alert the EXACT name Flourish is sending
+                const clickedName = e.data.name || (e.data.data ? e.data.data.name : "NAME_NOT_FOUND");
+                alert("Bridge detected: [" + clickedName + "]");
+
+                if (clickedName && radarData[clickedName]) {
+                    const data = radarData[clickedName];
+
+                    // Update Audio
                     const player = document.getElementById('radar-audio');
                     player.src = 'audio/' + data.audio;
                     player.load();
-                    player.play().catch(err => alert("Audio Error: " + err.message));
+                    
+                    // 3. Alert if the audio starts playing
+                    player.play()
+                        .then(() => { console.log("Playing..."); })
+                        .catch(err => alert("Audio Error: " + err.message));
 
+                    // Update Text
                     document.getElementById('ai-summary').innerText = data.summary;
                     if(document.getElementById('instruction-note')) {
                         document.getElementById('instruction-note').style.display = 'none';
                     }
                 } else {
-                    alert("No match found for: [" + cleanName + "]");
+                    // 4. Alert if the name doesn't match your radarData list
+                    alert("No match found in radarData for: [" + clickedName + "]");
                 }
             }
         });
+        
     </script>
+
 </body>
 </html>
