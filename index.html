@@ -16,7 +16,7 @@
             height: 100vh; /* Changed from min-height to height */
             overflow: hidden; /* Prevent double scrolling on PC */
         }
-    
+
         header {
             background-color: #1a1a1a;
             color: #d4af37;
@@ -24,24 +24,24 @@
             text-align: center;
             flex-shrink: 0;
         }
-    
+
         header h1 { font-size: 1.1rem; margin: 0; }
         header p { font-size: 0.7rem; margin: 0; }
-    
+
         .main-container {
             display: flex;
             flex: 1;
             flex-direction: row;
             overflow: hidden;
         }
-    
+
         /* Map gets the lion's share */
         .chart-section {
             flex: 3;
             background: white;
             position: relative;
         }
-    
+
         .info-section {
             flex: 1;
             padding: 20px;
@@ -50,7 +50,7 @@
             max-width: 380px;
             overflow-y: auto;
         }
-    
+
         /* MOBILE OPTIMIZATION */
         @media (max-width: 768px) {
             body { overflow: auto; } /* Allow scrolling on mobile */
@@ -61,14 +61,14 @@
                 width: 100vw;
                 flex: none;
             }
-    
+
             .info-section {
                 max-width: 100%;
                 border-left: none;
                 border-top: 2px solid #d4af37;
             }
         }
-    
+
         /* Ensure the Iframe takes every single pixel */
         iframe {
             position: absolute;
@@ -78,7 +78,7 @@
             height: 100%;
             border: none;
         }
-    
+
         .audio-card {
             background: #fff;
             padding: 15px;
@@ -87,100 +87,110 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             margin-bottom: 15px;
         }
-    
+
         #ai-summary { font-weight: bold; line-height: 1.5; }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Japanese Social Radar V4.0</h1>
-    <p>Reading the "Invisible Air" with Generative AI</p>
-</header>
+    <header>
+        <h1>Japanese Social Radar V4.0</h1>
+        <p>Reading the "Invisible Air" with Generative AI</p>
+    </header>
 
-<div class="main-container">
-    <section class="chart-section">
-        <iframe src="https://public.flourish.studio/visualisation/28074057/embed" title="Social Radar Map"></iframe>
-    </section>
+    <div class="main-container">
+        <section class="chart-section">
+            <iframe src="https://public.flourish.studio/visualisation/28074057/embed" title="Social Radar Map"></iframe>
+        </section>
 
-    <section class="info-section">
-        <div id="instruction-note">
-            <h3>Select a scenario on the map</h3>
-            <p>Click a slice of the radar to hear the phrase and see the AI cultural analysis.</p>
-        </div>
+        <section class="info-section">
+            <div id="instruction-note">
+                <h3>Select a scenario on the map</h3>
+                <p>Click a slice of the radar to hear the phrase and see the AI cultural analysis.</p>
+            </div>
 
-        <div class="audio-card">
-            <span class="audio-label">🔊 Pronunciation & Nuance:</span>
-            <audio id="radar-audio" controls src="audio/placeholder.wav">
-                Your browser does not support the audio element.
-            </audio>
-        </div>
+            <div class="audio-card">
+                <span class="audio-label">🔊 Pronunciation & Nuance:</span>
+                <audio id="radar-audio" controls src="audio/placeholder.wav">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
 
-        <div class="analysis-card">
-            <h3>AI Cultural Summary</h3>
-            <p id="ai-summary">Waiting for selection...</p>
-        </div>
-    </section>
-    <section class="chart-section">
-        <iframe src="https://public.flourish.studio/visualisation/28074057/embed" 
-                title="Social Radar Map">
-        </iframe>
-    </section>
-</div>
+            <div class="analysis-card">
+                <h3>AI Cultural Summary</h3>
+                <p id="ai-summary">Waiting for selection...</p>
+            </div>
+        </section>
 
-<script>
-    // 1. Your Master Data
-    const radarData = {
-        "Zensho shimasu": { audio: "zensho.wav", summary: "A strategic 'no'. Suggests effort without promising a result." },
-        "Kentou kadai to sasete kudasai": { audio: "kentou.wav", summary: "A polite way to shelve an idea indefinitely." },
-        "Chotto muzukashii...": { audio: "muzukashii.wav", summary: "The 'Invisible Wall'. Means impossible in a social context." },
-        "Mae-muki ni kentou shimasu": { audio: "maemuki.wav", summary: "Avoids a direct 'no' by promising future consideration." },
-        "Yoroshiku ne": { audio: "yoroshiku.wav", summary: "Senior-to-junior handoff. Implies full responsibility is now yours." },
-        "Go-iken o ukagaitai": { audio: "goiken.wav", summary: "Seeking agreement for a decision that has already been made." },
-        "Sekinin o tsuikan...": { audio: "tsuikan.wav", summary: "An apology that avoids taking personal blame." },
-        "Isoganakute ii desu": { audio: "isoganakute.wav", summary: "Patient on the surface, but implies high expectations." },
-        "Aru imi de...": { audio: "aruimi.wav", summary: "Signals that a critique or a shift in tone is coming." },
-        "Gokai o osorezu ni...": { audio: "gokai.wav", summary: "I am about to be blunt and possibly rude." },
-        "Kore wa kore de...": { audio: "korewa.wav", summary: "A backhanded compliment; it's not what was wanted." },
-        "Kiku dake kikimasu": { audio: "kikudake.wav", summary: "I will listen, but I won't change my mind." },
-        "Ma, tamatama desu": { audio: "tamatama.wav", summary: "Humility used to protect group harmony." },
-        "Ma-a, sou desu ne...": { audio: "sou-desu-ne.wav", summary: "Stalling because they disagree but won't say it yet." },
-        "Wakarimashita": { audio: "wakarimashita.wav", summary: "I heard you (does not mean I agree)." },
-        "Iro-iro arimashite": { audio: "iro-iro.wav", summary: "A boundary marker. Don't ask for more details." },
-        "O-isogashii tokoro...": { audio: "oisogashii.wav", summary: "Polite lubrication before a request." },
-        "Kou-iu mono desu ga": { audio: "kouiu.wav", summary: "Establishing identity and hierarchy via business card." },
-        "Benkyou sasete kudasai": { audio: "benkyou.wav", summary: "A request for a lower price." },
-        "Sou iu koto nara...": { audio: "souiu.wav", summary: "A reluctant concession with reservations." }
-    };
+        <section class="chart-section">
+            <iframe src="https://public.flourish.studio/visualisation/28074057/embed" 
+                    title="Social Radar Map">
+            </iframe>
+        </section>
+    </div>
 
-    // 2. The Robust Bridge
-    window.addEventListener('message', function(e) {
-        // Standard Flourish Script Embeds send data in this format:
-        if (e.data && (e.data.type === 'flourish-click' || e.data.action === 'click')) {
-            
-            // Try to find the name in different possible Flourish data spots
-            const clickedName = e.data.name || (e.data.data ? e.data.data.name : null);
-            
-            console.log("Radar detected click on:", clickedName); // DEBUG SPY
+    <script>
+        // 1. Your Master Data
+        const radarData = {
+            "Zenshoshimasu": { audio: "zensho.wav", summary: "A strategic 'no'. Suggests effort without promising a result." },
+            "Kentoukadaito": { audio: "kentou.wav", summary: "A polite way to shelve an idea indefinitely." },
+            "Chottomuzukashii": { audio: "muzukashii.wav", summary: "The 'Invisible Wall'. Means impossible in a social context." },
+            "Maemukinikentou": { audio: "maemuki.wav", summary: "Avoids a direct 'no' by promising future consideration." },
+            "Yoroshikune": { audio: "yoroshiku.wav", summary: "Senior-to-junior handoff. Implies full responsibility is now yours." },
+            "Goikenoukagaitai": { audio: "goiken.wav", summary: "Seeking agreement for a decision that has already been made." },
+            "Sekininotsukan": { audio: "tsuikan.wav", summary: "An apology that avoids taking personal blame." },
+            "Isoganakuteii": { audio: "isoganakute.wav", summary: "Patient on the surface, but implies high expectations." },
+            "Aruimide": { audio: "aruimi.wav", summary: "Signals that a critique or a shift in tone is coming." },
+            "Gokaioosorezu": { audio: "gokai.wav", summary: "I am about to be blunt and possibly rude." },
+            "Korewakorede": { audio: "korewa.wav", summary: "A backhanded compliment; it's not what was wanted." },
+            "Kikudakekikimasu": { audio: "kikudake.wav", summary: "I will listen, but I won't change my mind." },
+            "Maa,tamatama": { audio: "tamatama.wav", summary: "Humility used to protect group harmony." },
+            "Maa,soudesune": { audio: "sou-desu-ne.wav", summary: "Stalling because they disagree but won't say it yet." },
+            "Wakarimashita": { audio: "wakarimashita.wav", summary: "I heard you (does not mean I agree)." },
+            "Iroiroarimashite": { audio: "iro-iro.wav", summary: "A boundary marker. Don't ask for more details." },
+            "Oisogashiitokoro": { audio: "oisogashii.wav", summary: "Polite lubrication before a request." },
+            "Kouiumonodesuga": { audio: "kouiu.wav", summary: "Establishing identity and hierarchy via business card." },
+            "Benkyousasete": { audio: "benkyou.wav", summary: "A request for a lower price." },
+            "Souiukotonara": { audio: "souiu.wav", summary: "A reluctant concession with reservations." }
+        };
 
-            if (clickedName && radarData[clickedName]) {
-                const data = radarData[clickedName];
+        // 2. The Robust Bridge
+        window.addEventListener('message', function(e) {
+            // 1. Alert that a message was received at all
+            // alert("Message received from Flourish!"); 
 
-                // Update Audio
-                const player = document.getElementById('radar-audio');
-                player.src = 'audio/' + data.audio;
-                player.load();
-                player.play();
-
-                // Update Text
-                document.getElementById('ai-summary').innerText = data.summary;
+            if (e.data && (e.data.type === 'flourish-click' || e.data.action === 'click')) {
                 
-                // Hide the instruction note
-                document.getElementById('instruction-note').style.display = 'none';
+                // 2. Alert the EXACT name Flourish is sending
+                const clickedName = e.data.name || (e.data.data ? e.data.data.name : "NAME_NOT_FOUND");
+                alert("Bridge detected: [" + clickedName + "]");
+
+                if (clickedName && radarData[clickedName]) {
+                    const data = radarData[clickedName];
+
+                    // Update Audio
+                    const player = document.getElementById('radar-audio');
+                    player.src = 'audio/' + data.audio;
+                    player.load();
+                    
+                    // 3. Alert if the audio starts playing
+                    player.play()
+                        .then(() => { console.log("Playing..."); })
+                        .catch(err => alert("Audio Error: " + err.message));
+
+                    // Update Text
+                    document.getElementById('ai-summary').innerText = data.summary;
+                    if(document.getElementById('instruction-note')) {
+                        document.getElementById('instruction-note').style.display = 'none';
+                    }
+                } else {
+                    // 4. Alert if the name doesn't match your radarData list
+                    alert("No match found in radarData for: [" + clickedName + "]");
+                }
             }
-        }
-    });
-</script>
+        });
+        
+    </script>
 
 </body>
 </html>
