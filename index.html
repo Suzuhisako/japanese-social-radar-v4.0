@@ -119,26 +119,33 @@
 
         window.addEventListener('message', function(e) {
             let data = e.data;
-            if (typeof e.data === 'string' && e.data.includes("flourish")) {
+            if (typeof e.data === 'string') {
                 try { data = JSON.parse(e.data); } catch (err) { return; }
             }
 
-            if (data && (data.type === 'flourish-click' || data.action === 'click')) {
+            // NEW: Listen for 'flourish-hover' or 'hover'
+            if (data && (data.type === 'flourish-hover' || data.action === 'hover' || data.type === 'flourish-click')) {
+                
                 const clickedName = data.name || (data.data ? data.data.name : null);
                 
                 if (clickedName) {
-                    alert("Bridge detected: [" + clickedName + "]");
+                    // This alert will now pop up the MOMENT your mouse touches a slice
+                    console.log("Bridge caught a Hover/Click on: [" + clickedName + "]");
                     
                     if (radarData[clickedName]) {
                         const info = radarData[clickedName];
                         const player = document.getElementById('radar-audio');
-                        player.src = 'audio/' + info.audio;
-                        player.load();
-                        player.play().catch(err => console.log("Audio play prevented by browser"));
+                        
+                        // Only change the audio if it's a different slice
+                        if (!player.src.includes(info.audio)) {
+                            player.src = 'audio/' + info.audio;
+                            player.load();
+                            // Note: Browsers usually block Auto-play on HOVER. 
+                            // The user will likely still need to click 'Play'.
+                        }
+
                         document.getElementById('ai-summary').innerText = info.summary;
                         document.getElementById('instruction-note').style.display = 'none';
-                    } else {
-                        alert("No match found for: [" + clickedName + "]");
                     }
                 }
             }
