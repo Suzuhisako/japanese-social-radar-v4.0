@@ -5,28 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Japanese Social Radar V4.0</title>
     <style>
-        /* --- Masterpiece Gold Standard Styling --- */
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
             margin: 0;
             background-color: #f4f4f9;
-            color: #333;
             display: flex;
             flex-direction: column;
-            height: 100vh; /* Changed from min-height to height */
-            overflow: hidden; /* Prevent double scrolling on PC */
+            height: 100vh;
+            overflow: hidden;
         }
 
         header {
             background-color: #1a1a1a;
             color: #d4af37;
-            padding: 8px; /* Extra slim */
+            padding: 10px;
             text-align: center;
             flex-shrink: 0;
         }
-
-        header h1 { font-size: 1.1rem; margin: 0; }
-        header p { font-size: 0.7rem; margin: 0; }
 
         .main-container {
             display: flex;
@@ -35,14 +30,12 @@
             overflow: hidden;
         }
 
-        /* Map gets the lion's share */
+        /* Simplified Chart Section - No more Iframe CSS! */
         .chart-section {
             flex: 3;
             background: white;
-            min-height: 400px; /* Give it a guaranteed floor */
-            height: 100%;
             position: relative;
-            overflow: hidden;            
+            min-height: 500px; /* Forces space for the map */
         }
 
         .info-section {
@@ -54,32 +47,12 @@
             overflow-y: auto;
         }
 
-        /* MOBILE OPTIMIZATION */
+        /* Mobile Adjustments */
         @media (max-width: 768px) {
-            body { overflow: auto; } /* Allow scrolling on mobile */
+            body { overflow: auto; }
             .main-container { flex-direction: column; }
-            
-            .chart-section {
-                height: 60vh; /* 60% of the screen height just for the map */
-                width: 100vw;
-                flex: none;
-            }
-
-            .info-section {
-                max-width: 100%;
-                border-left: none;
-                border-top: 2px solid #d4af37;
-            }
-        }
-
-        /* Ensure the Iframe takes every single pixel */
-        iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
+            .chart-section { height: 60vh; width: 100vw; flex: none; min-height: 350px; }
+            .info-section { max-width: 100%; border-left: none; border-top: 2px solid #d4af37; }
         }
 
         .audio-card {
@@ -90,8 +63,6 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             margin-bottom: 15px;
         }
-
-        #ai-summary { font-weight: bold; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -103,22 +74,17 @@
 
     <div class="main-container">
         <section class="chart-section">
-            <div class="flourish-embed flourish-sunburst" data-src="visualisation/28074057" style="height:100vh;"></div>
+            <div class="flourish-embed flourish-sunburst" data-src="visualisation/28074057"></div>
         </section>
 
         <section class="info-section">
             <div id="instruction-note">
                 <h3>Select a scenario on the map</h3>
-                <p>Click a slice of the radar to hear the phrase and see the AI cultural analysis.</p>
             </div>
-
             <div class="audio-card">
-                <span class="audio-label">🔊 Pronunciation & Nuance:</span>
                 <audio id="radar-audio" controls src="audio/placeholder.wav"></audio>
             </div>
-
             <div class="analysis-card">
-                <h3>AI Cultural Summary</h3>
                 <p id="ai-summary">Waiting for selection...</p>
             </div>
         </section>
@@ -149,53 +115,33 @@
             "Souiukotonara": { audio: "souiu.wav", summary: "A reluctant concession with reservations." }
         };
 
-       // Use the radarData you modified (the ones that match Flourish exactly)
-        //const radarData = {
-          //  "Zenshoshimasu": { audio: "zensho.wav", summary: "A strategic 'no'. Suggests effort without promising a result." },
-            // ... (rest of your keys)
-       // };
-
-        // 2. THE LISTENER (The Bridge)
-        window.addEventListener('message', function(e) {
-        // Prepare the data (sometimes Flourish sends a 'string' instead of an 'object')
+      window.addEventListener('message', function(e) {
             let data = e.data;
             if (typeof e.data === 'string') {
                 try { data = JSON.parse(e.data); } catch (err) { return; }
             }
 
-            // Check if the signal is a "click"
             if (data && (data.type === 'flourish-click' || data.action === 'click')) {
+                const clickedName = data.name || (data.data ? data.data.name : null);
                 
-                // Grab the name from the click
-                const clickedName = data.name || (data.data ? data.data.name : "NAME_NOT_FOUND");
-                
-                // ALERT: This is our diagnostic tool. It MUST pop up now!
-                alert("Bridge detected: [" + clickedName + "]");
-
-                // 3. THE LOGIC (Inside the listener)
-                if (clickedName && radarData[clickedName]) {
-                    const info = radarData[clickedName];
-
-                    // Update & Play Audio
-                    const player = document.getElementById('radar-audio');
-                    player.src = 'audio/' + info.audio;
-                    player.load();
-                    player.play().catch(err => alert("Audio Error: " + err.message));
-
-                    // Update the AI Summary text
-                    document.getElementById('ai-summary').innerText = info.summary;
+                if (clickedName) {
+                    alert("Bridge detected: [" + clickedName + "]");
                     
-                    // Hide the "Select a scenario" instruction
-                    const note = document.getElementById('instruction-note');
-                    if (note) note.style.display = 'none';
-                    
-                } else {
-                    // If it clicks but doesn't match your dictionary keys
-                    alert("No match found for: [" + clickedName + "]");
+                    if (radarData[clickedName]) {
+                        const info = radarData[clickedName];
+                        const player = document.getElementById('radar-audio');
+                        player.src = 'audio/' + info.audio;
+                        player.load();
+                        player.play().catch(err => console.log("Audio play blocked"));
+                        document.getElementById('ai-summary').innerText = info.summary;
+                        document.getElementById('instruction-note').style.display = 'none';
+                    }
                 }
             }
         });
     </script>
+
     <script src="https://public.flourish.studio/resources/embed.js"></script>
+
 </body>
 </html>
