@@ -100,12 +100,9 @@
 
     <div class="main-container">
         <section class="chart-section">
-            <iframe 
-                src="https://public.flourish.studio/visualisation/28074057/embed" 
-                title="Social Radar Map"
-                sandbox="allow-same-origin allow-scripts allow-forms"
-                allow="autoplay">
-            </iframe>
+            <div class="flourish-embed flourish-sunburst" data-src="visualisation/28074057"></div>
+            
+            <script src="https://public.flourish.studio/resources/embed.js"></script>
         </section>
 
         <section class="info-section">
@@ -150,36 +147,43 @@
             "Benkyousasete": { audio: "benkyou.wav", summary: "A request for a lower price." },
             "Souiukotonara": { audio: "souiu.wav", summary: "A reluctant concession with reservations." }
         };
-
-       // Use the radarData you modified (the ones that match Flourish exactly)
-        //const radarData = {
-          //  "Zenshoshimasu": { audio: "zensho.wav", summary: "A strategic 'no'. Suggests effort without promising a result." },
-            // ... (rest of your keys)
-       // };
+    
 
         window.addEventListener('message', function(e) {
-            // This is the important diagnostic alert
-            if (e.data) {
-                // If we get ANY message from Flourish, this alert will pop up
-                // alert("Message received from Flourish!"); 
+        // Prepare the data (sometimes Flourish sends a 'string' instead of an 'object')
+            let data = e.data;
+            if (typeof e.data === 'string') {
+                try { data = JSON.parse(e.data); } catch (err) { return; }
             }
 
-            if (e.data && (e.data.type === 'flourish-click' || e.data.action === 'click')) {
-                const clickedName = e.data.name || (e.data.data ? e.data.data.name : "NAME_NOT_FOUND");
+            // Check if the signal is a "click"
+            if (data && (data.type === 'flourish-click' || data.action === 'click')) {
                 
-                // This alert tells us EXACTLY what Flourish is saying to the bridge
+                // Grab the name from the click
+                const clickedName = data.name || (data.data ? data.data.name : "NAME_NOT_FOUND");
+                
+                // ALERT: This is our diagnostic tool. It MUST pop up now!
                 alert("Bridge detected: [" + clickedName + "]");
 
+                // 3. THE LOGIC (Inside the listener)
                 if (clickedName && radarData[clickedName]) {
-                    const data = radarData[clickedName];
+                    const info = radarData[clickedName];
+
+                    // Update & Play Audio
                     const player = document.getElementById('radar-audio');
-                    player.src = 'audio/' + data.audio;
+                    player.src = 'audio/' + info.audio;
                     player.load();
                     player.play().catch(err => alert("Audio Error: " + err.message));
 
-                    document.getElementById('ai-summary').innerText = data.summary;
-                    document.getElementById('instruction-note').style.display = 'none';
+                    // Update the AI Summary text
+                    document.getElementById('ai-summary').innerText = info.summary;
+                    
+                    // Hide the "Select a scenario" instruction
+                    const note = document.getElementById('instruction-note');
+                    if (note) note.style.display = 'none';
+                    
                 } else {
+                    // If it clicks but doesn't match your dictionary keys
                     alert("No match found for: [" + clickedName + "]");
                 }
             }
