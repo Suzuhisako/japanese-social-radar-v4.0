@@ -35,7 +35,7 @@
             flex: 3;
             background: white;
             position: relative;
-            min-height: 500px; /* Forces space for the map */
+            min-height: 400px; /* Forces space for the map */
         }
 
         .info-section {
@@ -51,7 +51,7 @@
         @media (max-width: 768px) {
             body { overflow: auto; }
             .main-container { flex-direction: column; }
-            .chart-section { height: 60vh; width: 100vw; flex: none; min-height: 350px; }
+            .chart-section { height: 60vh; width: 100vw; flex: none; }
             .info-section { max-width: 100%; border-left: none; border-top: 2px solid #d4af37; }
         }
 
@@ -80,11 +80,13 @@
         <section class="info-section">
             <div id="instruction-note">
                 <h3>Select a scenario on the map</h3>
+                <p>Click a slice of the radar to hear the phrase and see the analysis.</p>
             </div>
             <div class="audio-card">
                 <audio id="radar-audio" controls src="audio/placeholder.wav"></audio>
             </div>
             <div class="analysis-card">
+                <h3>AI Cultural Summary</h3>
                 <p id="ai-summary">Waiting for selection...</p>
             </div>
         </section>
@@ -115,9 +117,9 @@
             "Souiukotonara": { audio: "souiu.wav", summary: "A reluctant concession with reservations." }
         };
 
-      window.addEventListener('message', function(e) {
+        window.addEventListener('message', function(e) {
             let data = e.data;
-            if (typeof e.data === 'string') {
+            if (typeof e.data === 'string' && e.data.includes("flourish")) {
                 try { data = JSON.parse(e.data); } catch (err) { return; }
             }
 
@@ -132,9 +134,11 @@
                         const player = document.getElementById('radar-audio');
                         player.src = 'audio/' + info.audio;
                         player.load();
-                        player.play().catch(err => console.log("Audio play blocked"));
+                        player.play().catch(err => console.log("Audio play prevented by browser"));
                         document.getElementById('ai-summary').innerText = info.summary;
                         document.getElementById('instruction-note').style.display = 'none';
+                    } else {
+                        alert("No match found for: [" + clickedName + "]");
                     }
                 }
             }
