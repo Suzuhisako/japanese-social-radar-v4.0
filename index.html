@@ -117,44 +117,52 @@
             "Souiukotonara": { audio: "souiu.wav", summary: "A reluctant concession with reservations." }
         };
 
-      function triggerRadar(name) {
-        const info = radarData[name];
-        const player = document.getElementById('radar-audio');
-        
-        // Prevent looping the same audio
-        if (!player.src.includes(info.audio)) {
-            console.log("🎯 MATCH FOUND! Playing:", info.audio);
-            player.src = 'audio/' + info.audio;
-            player.load();
-            player.play().catch(e => console.log("Play waiting for click..."));
-            document.getElementById('ai-summary').innerText = info.summary;
-            if(document.getElementById('instruction-note')) {
-                document.getElementById('instruction-note').style.display = 'none';
-            }
-        }
-    }
-
-        // THE AGGRESSIVE SPY
-        const observer = new MutationObserver((mutations) => {
-            // Look for ANY Flourish popup or panel content
-            const popup = document.querySelector('.flourish-popup-content, .flourish-panel-content, .flourish-tooltip');
-            
-            if (popup) {
-                const rawText = popup.innerText;
-                console.log("🕵️ Spy is reading popup text:", rawText); // CHECK THIS IN CONSOLE
+          // 1. OPEN THE RADIO RECEIVER
+        window.addEventListener('message', function(event) {
+            // Log every single sound coming from Flourish to the console
+            console.log("📡 SIGNAL RECEIVED:", event.data);
     
-                // Check each phrase in your list
-                Object.keys(radarData).forEach(phrase => {
-                    // If the popup contains the phrase (ignoring Capital Letters)
-                    if (rawText.toLowerCase().includes(phrase.toLowerCase())) {
-                        triggerRadar(phrase);
+            let data = event.data;
+            
+            // Flourish often sends data as a 'String' that looks like JSON
+            if (typeof data === 'string') {
+                try { 
+                    data = JSON.parse(data); 
+                    console.log("Parsed Data:", data);
+                } catch (e) { 
+                    // Not JSON, just ignore
+                    return; 
+                }
+            }
+    
+            // 2. SEARCH THE SIGNAL FOR YOUR PHRASES
+            // We look for 'click', 'hover', or even just a name update
+            const possibleName = data.name || (data.data && data.data.name) || (data.info && data.info.name);
+    
+            if (possibleName) {
+                console.log("🔍 Found a name in the signal:", possibleName);
+                
+                // Check if this name matches our radarData
+                Object.keys(radarData).forEach(key => {
+                    if (possibleName.toLowerCase().includes(key.toLowerCase())) {
+                        playRadar(key);
                     }
                 });
             }
         });
     
-        // Start watching the page
-        observer.observe(document.body, { childList: true, subtree: true });
+        function playRadar(key) {
+            const info = radarData[key];
+            const player = document.getElementById('radar-audio');
+            
+            if (!player.src.includes(info.audio)) {
+                console.log("🎬 ACTION: Playing", info.audio);
+                player.src = 'audio/' + info.audio;
+                player.load();
+                player.play().catch(err => console.log("Audio play blocked by browser"));
+                document.getElementById('ai-summary').innerText = info.summary;
+            }
+        }
     </script>
 
     <script src="https://public.flourish.studio/resources/embed.js"></script>  
