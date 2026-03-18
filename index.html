@@ -39,7 +39,10 @@
         .chart-section {
             flex: 3;
             background: white;
+            min-height: 400px; /* Give it a guaranteed floor */
+            height: 100%;
             position: relative;
+            overflow: hidden;            
         }
 
         .info-section {
@@ -100,9 +103,7 @@
 
     <div class="main-container">
         <section class="chart-section">
-            <div class="flourish-embed flourish-sunburst" data-src="visualisation/28074057"></div>
-            
-            <script src="https://public.flourish.studio/resources/embed.js"></script>
+            <div class="flourish-embed flourish-sunburst" data-src="visualisation/28074057" style="height:100vh;"></div>
         </section>
 
         <section class="info-section">
@@ -147,8 +148,14 @@
             "Benkyousasete": { audio: "benkyou.wav", summary: "A request for a lower price." },
             "Souiukotonara": { audio: "souiu.wav", summary: "A reluctant concession with reservations." }
         };
-    
 
+       // Use the radarData you modified (the ones that match Flourish exactly)
+        //const radarData = {
+          //  "Zenshoshimasu": { audio: "zensho.wav", summary: "A strategic 'no'. Suggests effort without promising a result." },
+            // ... (rest of your keys)
+       // };
+
+        // 2. THE LISTENER (The Bridge)
         window.addEventListener('message', function(e) {
         // Prepare the data (sometimes Flourish sends a 'string' instead of an 'object')
             let data = e.data;
@@ -189,6 +196,6 @@
             }
         });
     </script>
-
+    <script src="https://public.flourish.studio/resources/embed.js"></script>
 </body>
 </html>
