@@ -117,33 +117,43 @@
             "Souiukotonara": { audio: "souiu.wav", summary: "A reluctant concession with reservations." }
         };
 
-       const observer = new MutationObserver((mutations) => {
-            const popup = document.querySelector('.flourish-popup-content');
+      function triggerRadar(name) {
+        const info = radarData[name];
+        const player = document.getElementById('radar-audio');
+        
+        // Prevent looping the same audio
+        if (!player.src.includes(info.audio)) {
+            console.log("🎯 MATCH FOUND! Playing:", info.audio);
+            player.src = 'audio/' + info.audio;
+            player.load();
+            player.play().catch(e => console.log("Play waiting for click..."));
+            document.getElementById('ai-summary').innerText = info.summary;
+            if(document.getElementById('instruction-note')) {
+                document.getElementById('instruction-note').style.display = 'none';
+            }
+        }
+    }
+
+        // THE AGGRESSIVE SPY
+        const observer = new MutationObserver((mutations) => {
+            // Look for ANY Flourish popup or panel content
+            const popup = document.querySelector('.flourish-popup-content, .flourish-panel-content, .flourish-tooltip');
+            
             if (popup) {
-                // Convert all popup text to Lowercase for easier matching
-                const text = popup.innerText.toLowerCase();
-                
-                Object.keys(radarData).forEach(key => {
-                    // Convert your key to Lowercase too, just to be safe
-                    if (text.includes(key.toLowerCase())) {
-                        triggerRadar(key); 
+                const rawText = popup.innerText;
+                console.log("🕵️ Spy is reading popup text:", rawText); // CHECK THIS IN CONSOLE
+    
+                // Check each phrase in your list
+                Object.keys(radarData).forEach(phrase => {
+                    // If the popup contains the phrase (ignoring Capital Letters)
+                    if (rawText.toLowerCase().includes(phrase.toLowerCase())) {
+                        triggerRadar(phrase);
                     }
                 });
             }
         });
-
-        function triggerRadar(name) {
-            const data = radarData[name];
-            const player = document.getElementById('radar-audio');
-            if (!player.src.includes(data.audio)) {
-                player.src = 'audio/' + data.audio;
-                player.load();
-                // Browsers often block auto-play until the first click
-                player.play().catch(() => console.log("Waiting for user interaction..."));
-                document.getElementById('ai-summary').innerText = data.summary;
-            }
-        };
-
+    
+        // Start watching the page
         observer.observe(document.body, { childList: true, subtree: true });
     </script>
 
