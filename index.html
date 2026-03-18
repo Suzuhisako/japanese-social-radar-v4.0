@@ -117,42 +117,37 @@
             "Souiukotonara": { audio: "souiu.wav", summary: "A reluctant concession with reservations." }
         };
 
-        window.addEventListener('message', function(e) {
-            let data = e.data;
-            if (typeof e.data === 'string') {
-                try { data = JSON.parse(e.data); } catch (err) { return; }
-            }
-
-            // NEW: Listen for 'flourish-hover' or 'hover'
-            if (data && (data.type === 'flourish-hover' || data.action === 'hover' || data.type === 'flourish-click')) {
+       const observer = new MutationObserver((mutations) => {
+            const popup = document.querySelector('.flourish-popup-content');
+            if (popup) {
+                // Convert all popup text to Lowercase for easier matching
+                const text = popup.innerText.toLowerCase();
                 
-                const clickedName = data.name || (data.data ? data.data.name : null);
-                
-                if (clickedName) {
-                    // This alert will now pop up the MOMENT your mouse touches a slice
-                    console.log("Bridge caught a Hover/Click on: [" + clickedName + "]");
-                    
-                    if (radarData[clickedName]) {
-                        const info = radarData[clickedName];
-                        const player = document.getElementById('radar-audio');
-                        
-                        // Only change the audio if it's a different slice
-                        if (!player.src.includes(info.audio)) {
-                            player.src = 'audio/' + info.audio;
-                            player.load();
-                            // Note: Browsers usually block Auto-play on HOVER. 
-                            // The user will likely still need to click 'Play'.
-                        }
-
-                        document.getElementById('ai-summary').innerText = info.summary;
-                        document.getElementById('instruction-note').style.display = 'none';
+                Object.keys(radarData).forEach(key => {
+                    // Convert your key to Lowercase too, just to be safe
+                    if (text.includes(key.toLowerCase())) {
+                        triggerRadar(key); 
                     }
-                }
+                });
             }
         });
+
+        function triggerRadar(name) {
+            const data = radarData[name];
+            const player = document.getElementById('radar-audio');
+            if (!player.src.includes(data.audio)) {
+                player.src = 'audio/' + data.audio;
+                player.load();
+                // Browsers often block auto-play until the first click
+                player.play().catch(() => console.log("Waiting for user interaction..."));
+                document.getElementById('ai-summary').innerText = data.summary;
+            }
+        };
+
+        observer.observe(document.body, { childList: true, subtree: true });
     </script>
 
-    <script src="https://public.flourish.studio/resources/embed.js"></script>
+    <script src="https://public.flourish.studio/resources/embed.js"></script>  
 
 </body>
 </html>
