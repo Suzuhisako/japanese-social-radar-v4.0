@@ -98,7 +98,7 @@
 
     <div class="main-container">
         <section class="chart-section">
-            <iframe src="https://flo.uri.sh/visualisation/28074057/embed"?auto=1&interaction=true" 
+            <iframe src="https://flo.uri.sh/visualisation/28074057/embed?auto=1&interaction=true" 
                     class="flourish-iframe-bridge">
             </iframe>
         </section>
@@ -143,53 +143,49 @@
             "Souiukotonara": { audio: "souiu.wav", summary: "A reluctant concession with reservations." }
         };
 
-            // 1. OPEN THE RADIO RECEIVER
-        window.addEventListener('message', function(event) {
-            // Log every single sound coming from Flourish to the console
-            console.log("📡 SIGNAL RECEIVED:", event.data);
-
-            let data = event.data;
+        
+    
+        // 2. THE LISTENER: This "hears" when the popup link is clicked
+        window.addEventListener('hashchange', function() {
+            // Get the phrase from the URL (e.g., "#Zenshoshimasu" -> "Zenshoshimasu")
+            const clickedPhrase = window.location.hash.substring(1); 
             
-            // Flourish often sends data as a 'String' that looks like JSON
-            if (typeof data === 'string') {
-                try { 
-                    data = JSON.parse(data); 
-                    console.log("Parsed Data:", data);
-                } catch (e) { 
-                    // Not JSON, just ignore
-                    return; 
-                }
+            if (clickedPhrase) {
+                console.log("🔗 Bridge Active: Link detected for", clickedPhrase);
+                triggerRadar(clickedPhrase);
             }
-
-            // 2. SEARCH THE SIGNAL FOR YOUR PHRASES
-            // We look for 'click', 'hover', or even just a name update
-            const possibleName = data.name || (data.data && data.data.name) || (data.info && data.info.name);
-
-            if (possibleName) {
-                console.log("🔍 Found a name in the signal:", possibleName);
-                
-                // Check if this name matches our radarData
-                Object.keys(radarData).forEach(key => {
-                    if (possibleName.toLowerCase().includes(key.toLowerCase())) {
-                        playRadar(key);
-                    }
-                });
-            }
+            
+            // Clean the URL hash so the user can click the same slice again
+            history.replaceState(null, null, ' ');
         });
 
-        function playRadar(key) {
-            const info = radarData[key];
-            const player = document.getElementById('radar-audio');
+        // 3. THE ACTION: Updates the UI and plays audio
+        function triggerRadar(name) {
+            // Find the matching key (case-insensitive for safety)
+            const key = Object.keys(radarData).find(k => k.toLowerCase() === name.toLowerCase());
             
-            if (!player.src.includes(info.audio)) {
-                console.log("🎬 ACTION: Playing", info.audio);
+            if (key) {
+                const info = radarData[key];
+                const player = document.getElementById('radar-audio');
+                const summaryBox = document.getElementById('ai-summary');
+                const note = document.getElementById('instruction-note');
+
+                // Update Audio
                 player.src = 'audio/' + info.audio;
                 player.load();
-                player.play().catch(err => console.log("Audio play blocked by browser"));
-                document.getElementById('ai-summary').innerText = info.summary;
+                player.play().catch(e => console.log("Playback requires a manual click first."));
+
+                // Update Text
+                summaryBox.innerText = info.summary;
+                if (note) note.style.display = 'none';
+                
+                console.log("✅ Successfully synced AI Analysis for:", key);
+            } else {
+                console.log("⚠️ No audio data found for phrase:", name);
             }
         }
     </script>
+
 
     <script src="https://public.flourish.studio/resources/embed.js"></script>
 
