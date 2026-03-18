@@ -100,7 +100,12 @@
 
     <div class="main-container">
         <section class="chart-section">
-            <iframe src="https://public.flourish.studio/visualisation/28074057/embed" title="Social Radar Map"></iframe>
+            <iframe 
+                src="https://public.flourish.studio/visualisation/28074057/embed" 
+                title="Social Radar Map"
+                sandbox="allow-same-origin allow-scripts allow-forms"
+                allow="autoplay">
+            </iframe>
         </section>
 
         <section class="info-section">
@@ -111,9 +116,7 @@
 
             <div class="audio-card">
                 <span class="audio-label">🔊 Pronunciation & Nuance:</span>
-                <audio id="radar-audio" controls src="audio/placeholder.wav">
-                    Your browser does not support the audio element.
-                </audio>
+                <audio id="radar-audio" controls src="audio/placeholder.wav"></audio>
             </div>
 
             <div class="analysis-card">
@@ -121,8 +124,6 @@
                 <p id="ai-summary">Waiting for selection...</p>
             </div>
         </section>
-
-        
     </div>
 
     <script>
@@ -150,42 +151,39 @@
             "Souiukotonara": { audio: "souiu.wav", summary: "A reluctant concession with reservations." }
         };
 
-        // 2. The Robust Bridge
+       // Use the radarData you modified (the ones that match Flourish exactly)
+        //const radarData = {
+          //  "Zenshoshimasu": { audio: "zensho.wav", summary: "A strategic 'no'. Suggests effort without promising a result." },
+            // ... (rest of your keys)
+       // };
+
         window.addEventListener('message', function(e) {
-            // 1. Alert that a message was received at all
-            // alert("Message received from Flourish!"); 
+            // This is the important diagnostic alert
+            if (e.data) {
+                // If we get ANY message from Flourish, this alert will pop up
+                // alert("Message received from Flourish!"); 
+            }
 
             if (e.data && (e.data.type === 'flourish-click' || e.data.action === 'click')) {
-                
-                // 2. Alert the EXACT name Flourish is sending
                 const clickedName = e.data.name || (e.data.data ? e.data.data.name : "NAME_NOT_FOUND");
+                
+                // This alert tells us EXACTLY what Flourish is saying to the bridge
                 alert("Bridge detected: [" + clickedName + "]");
 
                 if (clickedName && radarData[clickedName]) {
                     const data = radarData[clickedName];
-
-                    // Update Audio
                     const player = document.getElementById('radar-audio');
                     player.src = 'audio/' + data.audio;
                     player.load();
-                    
-                    // 3. Alert if the audio starts playing
-                    player.play()
-                        .then(() => { console.log("Playing..."); })
-                        .catch(err => alert("Audio Error: " + err.message));
+                    player.play().catch(err => alert("Audio Error: " + err.message));
 
-                    // Update Text
                     document.getElementById('ai-summary').innerText = data.summary;
-                    if(document.getElementById('instruction-note')) {
-                        document.getElementById('instruction-note').style.display = 'none';
-                    }
+                    document.getElementById('instruction-note').style.display = 'none';
                 } else {
-                    // 4. Alert if the name doesn't match your radarData list
-                    alert("No match found in radarData for: [" + clickedName + "]");
+                    alert("No match found for: [" + clickedName + "]");
                 }
             }
         });
-        
     </script>
 
 </body>
