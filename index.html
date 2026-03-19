@@ -27,6 +27,7 @@
             background: white;
         }
 
+        
         .flourish-iframe-bridge {
             width: 100%;
             height: 100%;
@@ -70,6 +71,13 @@
             font-family: 'Georgia', serif;
             font-style: italic;
             transition: opacity 0.3s ease;
+            animation: fadeIn 0.5s;
+        }
+
+       
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         #instruction-note {
@@ -93,22 +101,28 @@
         <section class="chart-section">
             <div class="flourish-embed flourish-sunburst flourish-iframe-bridge" data-src="visualisation/28074057"></div>
         </section>
-    
+
         <section class="info-section">
             <div class="analysis-header">
                 <h2>AI Cultural Analysis Report</h2>
-            </div>       
-    
+            </div>   
+            
+            
             <div id="instruction-note">
-                <p>Select and click a phrase from the Social Radar rings to decode the hidden subtext.</p>
+                <p>Hover a slice and listen to Audio Nuance. <br> Click "Read AI Cultural Analysis" to show AI analysis.</br></p>
             </div>
-    
-            <div id="ai-summary"></div>
+
+            <div id="ai-summary">
+                    </div>
+            <p style="font-size: 12px; color: #999; margin-top: 20px; font-style: italic;">
+                💡 Tip: Close the popup on the map to select a new cultural phrase.
+            </p>
+            
         </section>
     </div>
-    
+
     <script>
-        // THE DATA MIRROR (20 Masterpiece Analyses)
+        // THE DATA MIRROR (Your 20 Masterpiece Analyses)
         const radarData = {
             "zenshoshimasu": { audio: "zensho.wav", summary: "The 'Stalling Commitment.' While it translates to 'doing my best,' it is a strategic ambiguity used to exit a conversation without making a promise. It suggests effort will be made, but provides a safety net if no result follows." },
             "kentoukadaito": { audio: "kentou.wav", summary: "The 'Polite Shelf.' Signals that a proposal is under 'serious consideration' or is a 'task for future study.' In reality, this usually means the idea has been shelved indefinitely to avoid the friction of a direct 'no'." },
@@ -131,8 +145,8 @@
             "benkyousasete": { audio: "benkyou.wav", summary: "The 'Price Negotiator.' Literally 'let me study.' In a commercial context, this is the standard code for 'give me a discount' or 'lower your quote,' framed as a learning opportunity for the speaker." },
             "souiukotonara": { audio: "souiu.wav", summary: "The 'Reluctant Concession.' 'If that is the case.' It signals that the speaker is agreeing to terms they aren't entirely happy with, but are accepting due to the circumstances or pressure." }
         };
-    
-       window.addEventListener('message', function(event) {
+
+        window.addEventListener('message', function(event) {
             if (event.data && event.data.phrase) {
                 console.log("🚀 Received Signal:", event.data.phrase);
                 triggerRadar(event.data.phrase);
@@ -171,8 +185,8 @@
                 }
             }, 400); 
         }
-    </script> 
-        
+    </script>
+
     <script src="https://public.flourish.studio/resources/embed.js"></script>
 
 </body>
