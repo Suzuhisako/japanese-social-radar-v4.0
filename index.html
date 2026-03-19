@@ -133,12 +133,19 @@
     };
 
     // THE SYNC ENGINE
-    function checkHashAndTrigger() {
+     function checkHashAndTrigger() {
+        // 1. Get the phrase from the URL
         const clickedPhrase = window.location.hash.substring(1); 
+        
         if (clickedPhrase) {
+            console.log("🔗 Bridge Active: Signal for", clickedPhrase);
+            
+            // 2. Prevent the page from jumping/reloading
             triggerRadar(clickedPhrase);
-            // Small delay before clearing hash to ensure the "Sync" button can be clicked again
-            setTimeout(() => { history.replaceState(null, null, ' '); }, 150);
+            
+            // 3. Clean the URL so the user can click again without a reload
+            // This is the key to stopping the 'Freeze'
+            window.history.replaceState(null, null, window.location.pathname);
         }
     }
 
