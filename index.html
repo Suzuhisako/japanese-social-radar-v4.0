@@ -134,17 +134,16 @@
 
     // THE SYNC ENGINE
      function checkHashAndTrigger() {
-        // 1. Get the phrase from the URL
-        const clickedPhrase = window.location.hash.substring(1); 
-        
-        if (clickedPhrase) {
-            console.log("🔗 Bridge Active: Signal for", clickedPhrase);
+        const hash = window.location.hash;
+        if (hash) {
+            // 1. Remove the '#' to get the phrase
+            const clickedPhrase = hash.substring(1); 
             
-            // 2. Prevent the page from jumping/reloading
+            // 2. Run your analysis logic
             triggerRadar(clickedPhrase);
             
-            // 3. Clean the URL so the user can click again without a reload
-            // This is the key to stopping the 'Freeze'
+            // 3. IMPORTANT: This stops the "Jump"
+            // It keeps the user exactly where they are on the page
             window.history.replaceState(null, null, window.location.pathname);
         }
     }
