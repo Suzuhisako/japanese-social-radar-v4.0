@@ -132,49 +132,44 @@
             "souiukotonara": { audio: "souiu.wav", summary: "The 'Reluctant Concession.' 'If that is the case.' It signals that the speaker is agreeing to terms they aren't entirely happy with, but are accepting due to the circumstances or pressure." }
         };
     
-       // THE LISTENER: This catches the "shout" from Flourish
-        window.addEventListener('message', function(event) {
-            // Check if the message contains a phrase
+       window.addEventListener('message', function(event) {
             if (event.data && event.data.phrase) {
-                console.log("🚀 Received Signal from Flourish:", event.data.phrase);
+                console.log("🚀 Received Signal:", event.data.phrase);
                 triggerRadar(event.data.phrase);
             }
         });
-    
+
         function triggerRadar(name) {
-            // 1. Clean the name (remove extra spaces and make lowercase)
-            const cleanName = name.trim().toLowerCase();
-            console.log("🔍 Searching for a match for:", cleanName);
-
-            // 2. Find the key that MOST CLOSELY matches (handles the double 'n' issue)
-            const key = Object.keys(radarData).find(k => {
-                const cleanKey = k.toLowerCase();
-                // This check sees if one is inside the other (n vs nn)
-                return cleanKey.includes(cleanName) || cleanName.includes(cleanKey);
-            });
+            const summaryBox = document.getElementById('ai-summary');
+            const instruction = document.getElementById('instruction-note');
             
-            if (key) {
-                const info = radarData[key];
-                
-                // Update the Text
-                document.getElementById('ai-summary').innerHTML = info.summary;
+            // Start "Thinking" effect
+            if (instruction) instruction.style.display = 'none';
+            summaryBox.style.opacity = "0.5";
+            summaryBox.innerHTML = "🔍 Analyzing subtext for '" + name + "'...";
 
-                // Play the Audio
-                const player = document.getElementById('radar-audio');
-                player.src = 'audio/' + info.audio;
-                player.load();
-                player.play().catch(e => console.log("Audio needs manual click"));
-
-                // Hide instruction
-                const note = document.getElementById('instruction-note');
-                if(note) note.style.display = 'none';
+            setTimeout(() => {
+                const cleanName = name.trim().toLowerCase();
                 
-                console.log("✅ Success! Matched with:", key);
-            } else {
-                console.log("❌ Still no match for:", name);
-                // Fallback: If no match, just show the name so we can see it
-                document.getElementById('ai-summary').innerHTML = "Analysis for '" + name + "' is coming soon.";
-            }
+                // Find match in radarData
+                const key = Object.keys(radarData).find(k => {
+                    const cleanKey = k.toLowerCase();
+                    return cleanKey.includes(cleanName) || cleanName.includes(cleanKey);
+                });
+
+                if (key) {
+                    summaryBox.style.opacity = "1";
+                    // Display the matching analysis text
+                    summaryBox.innerHTML = "<strong>" + key + "</strong><br><br>" + radarData[key].summary;
+                    
+                    // Scroll sidebar to top
+                    summaryBox.closest('.info-section').scrollTop = 0;
+                    console.log("✅ Text Updated for:", key);
+                } else {
+                    summaryBox.style.opacity = "1";
+                    summaryBox.innerHTML = "⚠️ Analysis for '" + name + "' not found.";
+                }
+            }, 400); 
         }
     </script> 
         
