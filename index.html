@@ -1,37 +1,32 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Japanese Social Radar V4.0</title>
+    <title>Japanese Social Radar | AI Cultural Analysis</title>
     <style>
         body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
             margin: 0;
-            background-color: #f4f4f9;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fa;
             display: flex;
-            flex-direction: column;
             height: 100vh;
             overflow: hidden;
         }
 
-        header {
-            background-color: #1a1a1a;
-            color: #d4af37;
-            padding: 10px;
-            text-align: center;
-            flex-shrink: 0;
-            height: 90px
-        }
-
         .main-container {
             display: flex;
-            flex: 1;
-            flex-direction: row;
-            overflow: hidden;
+            width: 100%;
+            height: 100%;
         }
 
-        /* 1. Standard Desktop View */
+        /* 1. Chart Section (Left) */
+        .chart-section {
+            flex: 2;
+            position: relative;
+            background: white;
+        }
+
         .flourish-iframe-bridge {
             width: 100%;
             height: 100%;
@@ -39,194 +34,142 @@
             display: block;
         }
 
-        /* 2. The Information Sidebar */
+        /* 2. Info Sidebar (Right) */
         .info-section {
             flex: 1;
-            max-width: 400px;
+            max-width: 450px;
             padding: 40px;
             background-color: #ffffff;
-            border-left: 2px solid #d4af37;
+            border-left: 2px solid #d4af37; /* The Gold Standard */
             overflow-y: auto;
             display: flex;
             flex-direction: column;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.05);
+        }
+
+        .analysis-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+
+        .analysis-header h2 {
+            color: #d4af37;
+            margin: 0;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         
-        /* 4. The Analysis Text Styling */
+        /* 4. The Analysis Text */
         #ai-summary {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             line-height: 1.8;
-            color: #1d0f0f;
+            color: #2c3e50;
             font-family: 'Georgia', serif;
-            margin-top: 20px;
             font-style: italic;
+            transition: opacity 0.3s ease;
         }
 
-        /* 5. Mobile Adjustments (The Unified Version) */
+        #instruction-note {
+            color: #999;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Mobile Adjustments */
         @media (max-width: 768px) {
             body { overflow: auto; }
             .main-container { flex-direction: column; }
-            .chart-section { 
-                height: 60vh; 
-                width: 100vw; 
-                flex: none; 
-            }
-            .flourish-iframe-bridge { height: 100%; }
-            .info-section { 
-                max-width: 100%; 
-                padding: 25px; 
-                border-left: none; 
-                border-top: 3px solid #d4af37; 
-                padding-bottom: 50px; 
-            }
+            .chart-section { height: 65vh; width: 100vw; flex: none; }
+            .info-section { max-width: 100%; border-left: none; border-top: 3px solid #d4af37; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Japanese Social Radar V4.0</h1>
-        <p>Reading the "Invisible Air" with Generative AI</p>
-    </header>
+<div class="main-container">
+    <section class="chart-section">
+        <div class="flourish-embed flourish-sunburst flourish-iframe-bridge" data-src="visualisation/28074057"></div>
+    </section>
 
-    <div class="main-container">
-        <section class="chart-section" style="width: 100%; max-width: 900px; margin: 0 auto;">
-            <iframe src="https://flo.uri.sh/visualisation/28074057/embed?auto=1&interaction=true" 
-                    class="flourish-iframe-bridge"
-                    style="width: 100%; height: 650px; border: none;"
-                    allow="autoplay">
-            </iframe>
-        </section>
+    <section class="info-section">
+        <div class="analysis-header">
+            <h2>AI Cultural Analysis Report</h2>
+        </div>       
 
-       <section class="info-section">
-            <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">
-                <h2 style="color: #d4af37; margin: 0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px;">
-                    AI Cultural Analysis
-                </h2>
-            </div>
+        <div id="instruction-note">
+            <p>Select and click a phrase from the Social Radar rings to decode the hidden subtext.</p>
+        </div>
 
-            <p id="instruction-note" style="color: #23230D; font-size: 19px;font-style: italic;">
-                Hover over a slice and start the player to hear the phrase in Japanese with nuances. <br>Click the slice to show the cultural analysis.</br>
-            </p>
+        <div id="ai-summary"></div>
+    </section>
+</div>
 
-            <div id="ai-summary">
-                </div>
-        </section>
-    </div>
+<script>
+    // THE DATA MIRROR (Your 20 Masterpiece Analyses)
+    const radarData = {
+        "zenshoshimasu": { audio: "zensho.wav", summary: "The 'Stalling Commitment.' While it translates to 'doing my best,' it is a strategic ambiguity used to exit a conversation without making a promise. It suggests effort will be made, but provides a safety net if no result follows." },
+        "kentoukadaito": { audio: "kentou.wav", summary: "The 'Polite Shelf.' Signals that a proposal is under 'serious consideration' or is a 'task for future study.' In reality, this usually means the idea has been shelved indefinitely to avoid the friction of a direct 'no'." },
+        "chottomuzukashii": { audio: "muzukashii.wav", summary: "The 'Invisible Wall.' Literally means 'a little difficult,' but in a Japanese social context, it is a definitive 'impossible.' Saying 'no' directly is considered rude; this phrase protects the relationship while closing the door." },
+        "maemukinikentou": { audio: "maemuki.wav", summary: "The 'Positive Dead-End.' By promising 'positive consideration,' the speaker maintains a friendly atmosphere while buying time. It is a classic business tactic to delay a final decision without appearing uncooperative." },
+        "yoroshikune": { audio: "yoroshiku.wav", summary: "The 'Hierarchical Handoff.' Often used by seniors to juniors. While it sounds like a friendly 'nice to meet you' or 'thanks,' it often implies: 'I am handing full responsibility for this task to you now; don’t let me down.'" },
+        "goikenoukagaitai": { audio: "goiken.wav", summary: "The 'Performative Consensus.' Seeking an 'opinion' on a decision that has usually already been finalized behind the scenes (Nemawashi). It is a ritual to ensure everyone feels included in the group harmony." },
+        "sekininotsukan": { audio: "tsukan.wav", summary: "The 'Passive Apology.' Translates to 'feeling the weight of responsibility.' It is a formal way to acknowledge a mistake while subtly avoiding personal blame by framing the issue as a heavy, abstract burden." },
+        "isoganakuteii": { audio: "isoganakute.wav", summary: "The 'Patience Test.' On the surface, it means 'no rush.' However, because of the high-context culture, it often signals that the speaker is actually waiting and expects high-quality results exactly when they are needed." },
+        "aruimide": { audio: "aruimi.wav", summary: "The 'Tone Shifter.' Means 'in a sense.' It acts as a linguistic shield, signaling that the speaker is about to offer a critique or a shift in perspective that might otherwise sound too harsh or direct." },
+        "gokaioosorezu": { audio: "gokai.wav", summary: "The 'Bluntness Warning.' 'Without fear of being misunderstood.' This is a polite disclaimer used right before the speaker says something unusually direct, blunt, or potentially controversial." },
+        "korewakorede": { audio: "korewa.wav", summary: "The 'Backhanded Acceptance.' It acknowledges that the current result has 'its own value,' which is a subtle way of saying it wasn't exactly what was wanted or expected." },
+        "kikudakekikimasu": { audio: "kikudake.wav", summary: "The 'Closed Ear.' 'I will listen.' It establishes that the speaker is fulfilling their social duty to hear you out, but they have no intention of changing their mind or taking action based on what you say." },
+        "maa,tamatama": { audio: "tamatama.wav", summary: "The 'Harmony Shield.' Attributing success to 'coincidence' or 'luck' rather than skill. This humility prevents the speaker from standing out too much, which preserves the balance and ego of the group." },
+        "maa,soudesune": { audio: "soudesu-ne.wav", summary: "The 'Stalling Agreement.' A neutral filler used when the speaker disagrees or is surprised but wants to avoid an immediate confrontation. It buys seconds of thinking time to formulate a safe response." },
+        "wakarimashita": { audio: "wakarimashita.wav", summary: "The 'Reception Receipt.' Simply means 'I have received the information.' It is often mistaken by Westerners as 'I agree,' but it strictly means 'I understand your words,' not necessarily your intent." },
+        "iroiroarimashite": { audio: "iroiro.wav", summary: "The 'Privacy Gate.' 'Various things happened.' This is a firm boundary marker. It tells the listener that the topic is complicated or personal, and that they should stop asking for further details." },
+        "oisogashiitokoro": { audio: "oisogashii.wav", summary: "The 'Social Lubricant.' A standard greeting acknowledging the other person's busyness. It is used to soften the impact of an upcoming request or interruption, showing respect for their time." },
+        "kouiumonodesuga": { audio: "kouiu.wav", summary: "The 'Identity Anchor.' Used during business card exchange. It goes beyond a name, signaling the speaker's place within their organization and the hierarchy of the current meeting." },
+        "benkyousasete": { audio: "benkyou.wav", summary: "The 'Price Negotiator.' Literally 'let me study.' In a commercial context, this is the standard code for 'give me a discount' or 'lower your quote,' framed as a learning opportunity for the speaker." },
+        "souiukotonara": { audio: "souiu.wav", summary: "The 'Reluctant Concession.' 'If that is the case.' It signals that the speaker is agreeing to terms they aren't entirely happy with, but are accepting due to the circumstances or pressure." }
+    };
 
-    <script>
-        // 1. Your Master Data
-        const radarData = {
-            "Zenshoshimasu": { 
-                audio: "zensho.wav", 
-                summary: "The 'Stalling Commitment.' While it translates to 'doing my best,' it is a strategic ambiguity used to exit a conversation without making a promise. It suggests effort will be made, but provides a safety net if no result follows." 
-            },
-            "Kentoukadaito": { 
-                audio: "kentou.wav", 
-                summary: "The 'Polite Shelf.' Signals that a proposal is under 'serious consideration' or is a 'task for future study.' In reality, this usually means the idea has been shelved indefinitely to avoid the friction of a direct 'no'." 
-            },
-            "Chottomuzukashii": { 
-                audio: "muzukashii.wav", 
-                summary: "The 'Invisible Wall.' Literally means 'a little difficult,' but in a Japanese social context, it is a definitive 'impossible.' Saying 'no' directly is considered rude; this phrase protects the relationship while closing the door." 
-            },
-            "Maemukinikentou": { 
-                audio: "maemuki.wav", 
-                summary: "The 'Positive Dead-End.' By promising 'positive consideration,' the speaker maintains a friendly atmosphere while buying time. It is a classic business tactic to delay a final decision without appearing uncooperative." 
-            },
-            "Yoroshikune": { 
-                audio: "yoroshiku.wav", 
-                summary: "The 'Hierarchical Handoff.' Often used by seniors to juniors. While it sounds like a friendly 'nice to meet you' or 'thanks,' it often implies: 'I am handing full responsibility for this task to you now; don’t let me down.'" 
-            },
-            "Goikenoukagaitai": { 
-                audio: "goiken.wav", 
-                summary: "The 'Performative Consensus.' Seeking an 'opinion' on a decision that has usually already been finalized behind the scenes (Nemawashi). It is a ritual to ensure everyone feels included in the group harmony." 
-            },
-            "Sekininotsukan": { 
-                audio: "tsukan.wav", 
-                summary: "The 'Passive Apology.' Translates to 'feeling the weight of responsibility.' It is a formal way to acknowledge a mistake while subtly avoiding personal blame by framing the issue as a heavy, abstract burden." 
-            },
-            "Isoganakuteii": { 
-                audio: "isoganakute.wav", 
-                summary: "The 'Patience Test.' On the surface, it means 'no rush.' However, because of the high-context culture, it often signals that the speaker is actually waiting and expects high-quality results exactly when they are needed." 
-            },
-            "Aruimide": { 
-                audio: "aruimi.wav", 
-                summary: "The 'Tone Shifter.' Means 'in a sense.' It acts as a linguistic shield, signaling that the speaker is about to offer a critique or a shift in perspective that might otherwise sound too harsh or direct." 
-            },
-            "Gokaioosorezu": { 
-                audio: "gokai.wav", 
-                summary: "The 'Bluntness Warning.' 'Without fear of being misunderstood.' This is a polite disclaimer used right before the speaker says something unusually direct, blunt, or potentially controversial." 
-            },
-            "Korewakorede": { 
-                audio: "korewa.wav", 
-                summary: "The 'Backhanded Acceptance.' It acknowledges that the current result has 'its own value,' which is a subtle way of saying it wasn't exactly what was wanted or expected." 
-            },
-            "Kikudakekikimasu": { 
-                audio: "kikudake.wav", 
-                summary: "The 'Closed Ear.' 'I will listen.' It establishes that the speaker is fulfilling their social duty to hear you out, but they have no intention of changing their mind or taking action based on what you say." 
-            },
-            "Maa,tamatama": { 
-                audio: "tamatama.wav", 
-                summary: "The 'Harmony Shield.' Attributing success to 'coincidence' or 'luck' rather than skill. This humility prevents the speaker from standing out too much, which preserves the balance and ego of the group." 
-            },
-            "Maa,soudesune": { 
-                audio: "soudesu-ne.wav", 
-                summary: "The 'Stalling Agreement.' A neutral filler used when the speaker disagrees or is surprised but wants to avoid an immediate confrontation. It buys seconds of thinking time to formulate a safe response." 
-            },
-            "Wakarimashita": { 
-                audio: "wakarimashita.wav", 
-                summary: "The 'Reception Receipt.' Simply means 'I have received the information.' It is often mistaken by Westerners as 'I agree,' but it strictly means 'I understand your words,' not necessarily your intent." 
-            },
-            "Iroiroarimashite": { 
-                audio: "iroiro.wav", 
-                summary: "The 'Privacy Gate.' 'Various things happened.' This is a firm boundary marker. It tells the listener that the topic is complicated or personal, and that they should stop asking for further details." 
-            },
-            "Oisogashiitokoro": { 
-                audio: "oisogashii.wav", 
-                summary: "The 'Social Lubricant.' A standard greeting acknowledging the other person's busyness. It is used to soften the impact of an upcoming request or interruption, showing respect for their time." 
-            },
-            "Kouiumonodesuga": { 
-                audio: "kouiu.wav", 
-                summary: "The 'Identity Anchor.' Used during business card exchange. It goes beyond a name, signaling the speaker's place within their organization and the hierarchy of the current meeting." 
-            },
-            "Benkyousasete": { 
-                audio: "benkyou.wav", 
-                summary: "The 'Price Negotiator.' Literally 'let me study.' In a commercial context, this is the standard code for 'give me a discount' or 'lower your quote,' framed as a learning opportunity for the speaker." 
-            },
-            "Souiukotonara": { 
-                audio: "souiu.wav", 
-                summary: "The 'Reluctant Concession.' 'If that is the case.' It signals that the speaker is agreeing to terms they aren't entirely happy with, but are accepting due to the circumstances or pressure." 
-            }
-        };
+    // THE SYNC ENGINE
+    function checkHashAndTrigger() {
+        const clickedPhrase = window.location.hash.substring(1); 
+        if (clickedPhrase) {
+            triggerRadar(clickedPhrase);
+            // Small delay before clearing hash to ensure the "Sync" button can be clicked again
+            setTimeout(() => { history.replaceState(null, null, ' '); }, 150);
+        }
+    }
 
+    function triggerRadar(name) {
+        // Find matching key (handles Maemukinikentou vs maemukinikentou)
+        const key = Object.keys(radarData).find(k => k.toLowerCase() === name.toLowerCase());
+        
+        if (key) {
+            const info = radarData[key];
             
-           
-       // 1. Listen for the hash change (normal way)
-        window.addEventListener('hashchange', function() {
-            checkHashAndTrigger();
-        });
+            // 1. Play Audio
+            const player = document.getElementById('radar-audio');
+            player.src = 'audio/' + info.audio;
+            player.load();
+            player.play().catch(e => console.log("Manual play required"));
 
-        // 2. ALSO listen for clicks anywhere on the page (backup way)
-        document.addEventListener('click', function() {
-            // Wait a tiny fraction of a second for the URL to update
-            setTimeout(checkHashAndTrigger, 50); 
-        });
+            // 2. Update Text
+            document.getElementById('ai-summary').innerHTML = info.summary;
+            
+            // 3. Hide Instruction
+            const note = document.getElementById('instruction-note');
+            if (note) note.style.display = 'none';
+        }
+    }
 
-        function checkHashAndTrigger() {
-            const clickedPhrase = window.location.hash.substring(1); 
-            if (clickedPhrase) {
-                console.log("🔗 Hash detected:", clickedPhrase);
-                triggerRadar(clickedPhrase);
-                
-                // Keep the URL clean, but don't clear it so fast that we miss it
-                setTimeout(() => {
-                    history.replaceState(null, null, ' ');
-                }, 100);
-            }
-        }     
-    </script>
+    // Listeners for the Bridge
+    window.addEventListener('hashchange', checkHashAndTrigger);
+    document.addEventListener('click', () => { setTimeout(checkHashAndTrigger, 50); });
+</script>
 
-    <script src="https://public.flourish.studio/resources/embed.js"></script>
+<script src="https://public.flourish.studio/resources/embed.js"></script>
 
 </body>
 </html>
