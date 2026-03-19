@@ -132,35 +132,38 @@
             "souiukotonara": { audio: "souiu.wav", summary: "The 'Reluctant Concession.' 'If that is the case.' It signals that the speaker is agreeing to terms they aren't entirely happy with, but are accepting due to the circumstances or pressure." }
         };
     
-        // 1. Check for the phrase as soon as the page loads/reloads
-        window.addEventListener('load', checkUrlForPhrase);
-    
-        // 2. The Logic to read the "Quiet Signal"
-        function checkUrlForPhrase() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const clickedPhrase = urlParams.get('phrase');
-    
-            if (clickedPhrase) {
-                console.log("🚀 Quiet Signal Received:", clickedPhrase);
-                triggerRadar(clickedPhrase);
-                
-                // Clean the URL immediately so the '?' disappears 
-                // This stops the page from reloading in a loop
-                window.history.replaceState(null, null, window.location.pathname);
+       // THE LISTENER: This catches the "shout" from Flourish
+        window.addEventListener('message', function(event) {
+            // Check if the message contains a phrase
+            if (event.data && event.data.phrase) {
+                console.log("🚀 Received Signal from Flourish:", event.data.phrase);
+                triggerRadar(event.data.phrase);
             }
-        }
+        });
     
-        // 3. Keep your triggerRadar function exactly as it was
         function triggerRadar(name) {
+            // Find the matching key in your data
             const key = Object.keys(radarData).find(k => k.toLowerCase() === name.toLowerCase());
+            
             if (key) {
                 const info = radarData[key];
-                document.getElementById('ai-summary').innerHTML = info.summary;
+                
+                // 1. Update the Analysis Text
+                const summaryBox = document.getElementById('ai-summary');
+                summaryBox.innerHTML = info.summary;
+    
+                // 2. Play the Audio
                 const player = document.getElementById('radar-audio');
                 player.src = 'audio/' + info.audio;
                 player.load();
-                player.play().catch(e => console.log("Interaction needed"));
-                if(document.getElementById('instruction-note')) document.getElementById('instruction-note').style.display = 'none';
+                player.play().catch(e => console.log("Manual play required"));
+    
+                // 3. Hide the instruction note
+                if(document.getElementById('instruction-note')) {
+                    document.getElementById('instruction-note').style.display = 'none';
+                }
+            } else {
+                console.log("❌ No match found for:", name);
             }
         }
     </script> 
