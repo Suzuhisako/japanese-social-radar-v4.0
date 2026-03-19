@@ -144,14 +144,14 @@
         };
 
         
-    
+       
         // 2. THE LISTENER: This "hears" when the popup link is clicked
         window.addEventListener('hashchange', function() {
-            // Get the phrase from the URL (e.g., "#Zenshoshimasu" -> "Zenshoshimasu")
+            
             const clickedPhrase = window.location.hash.substring(1); 
             
             if (clickedPhrase) {
-                console.log("🔗 Bridge Active: Link detected for", clickedPhrase);
+                console.log("🚀 Syncing AI for:", clickedPhrase);
                 triggerRadar(clickedPhrase);
             }
             
@@ -167,21 +167,16 @@
             if (key) {
                 const info = radarData[key];
                 const player = document.getElementById('radar-audio');
-                const summaryBox = document.getElementById('ai-summary');
-                const note = document.getElementById('instruction-note');
-
+                
                 // Update Audio
                 player.src = 'audio/' + info.audio;
                 player.load();
-                player.play().catch(e => console.log("Playback requires a manual click first."));
+                player.play().catch(e => console.log("Click the link in the popup to hear audio."));
 
                 // Update Text
-                summaryBox.innerText = info.summary;
-                if (note) note.style.display = 'none';
+                document.getElementById('ai-summary').innerText = info.summary;
+                if(document.getElementById('instruction-note')) document.getElementById('instruction-note').style.display = 'none';
                 
-                console.log("✅ Successfully synced AI Analysis for:", key);
-            } else {
-                console.log("⚠️ No audio data found for phrase:", name);
             }
         }
     </script>
