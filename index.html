@@ -60,24 +60,26 @@
         }
         
              
-       /* THE MAIN STAGE (THE LEFT SIDE) */
+       /* THE LEFT SIDE (CHART GALLERY) */
         .chart-section {
-            flex: 3; 
+            flex: 4; 
             background: #fdfdfd; 
-            display: flex;
-            align-items: center;    /* Vertical Center */
-            justify-content: center; /* Horizontal Center */
-            padding: 20px;
+            display: flex;           /* Turns on the centering engine */
+            align-items: center;     /* Centers vertically (top to bottom) */
+            justify-content: center; /* Centers horizontally (left to right) */
+            height: 100%;            /* Fills the full height of the container */
+            position: relative;
+            padding: 0;              /* Removes any lopsided padding */
         }
-
+        
+        /* THE RINGS (INSIDE THE GALLERY) */
         .flourish-embed {
-            width: 95%;
-            height: 85vh; /* Tells the rings to only use 85% of the viewport height */
-            max-height: 90%; /* An extra layer of protection against cutting */
-            margin: 0 auto;
+            width: 90% !important;   /* Uses 90% of the available LEFT space */
+            max-width: 1000px;       /* Prevents it from getting too massive */
+            margin: 0 auto !important; /* Forces equal margins on left and right */
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
         }
 
         /* THE ANALYSIS SIDEBAR (THE RIGHT SIDE) */
