@@ -5,13 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Japanese Social Radar | AI Cultural Analysis</title>
     <style>
-        <style>
+        
         body {
             margin: 0;
-            padding: 0;
-            height: 100vh;
             display: flex;
-            flex-direction: column; /* Header on top, Content below */
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden; /* This keeps the whole screen from scrolling */
+        }
+        
+        .main-container {
+            display: flex;
+            flex: 1; /* This tells the map/sidebar to take ALL remaining space */
+            overflow: hidden; 
         }
 
         .master-header {
@@ -55,13 +61,7 @@
         }
 
         
-        .main-container {
-            display: flex;
-            flex: 1; /* This tells the container to take up ALL remaining space below the header */
-            width: 100%;
-        }
-
-       
+             
        /* THE MAIN STAGE (THE LEFT SIDE) */
         .chart-section {
             flex: 3; 
