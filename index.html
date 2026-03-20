@@ -5,57 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Japanese Social Radar | AI Cultural Analysis</title>
     <style>
+        <style>
         body {
             margin: 0;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f8f9fa;
-            display: flex;
+            padding: 0;
             height: 100vh;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column; /* Header on top, Content below */
         }
 
         .master-header {
-        background-color: #ffffff;
-        padding: 20px 40px;
-        border-bottom: 3px solid #d4af37; /* The signature gold line */
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        z-index: 100;
+            background-color: #ffffff;
+            padding: 15px 30px; /* Increased padding slightly for breathing room */
+            border-bottom: 3px solid #d4af37;
+            display: flex;
+            flex-direction: column; /* Stacks Title and Subtitle vertically */
+            align-items: center;    /* Centers everything horizontally */
+            justify-content: center;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .master-header h1 {
             margin: 0;
-            font-size: 1.8rem;
-            letter-spacing: 4px;
+            font-size: 1.6rem; /* Restored size for readability */
+            letter-spacing: 3px;
             color: #222;
-            font-weight: 800;
-        }
-
-        .version-tag {
-            font-size: 0.9rem;
-            color: #d4af37;
-            vertical-align: middle;
-            margin-left: 10px;
-            border: 1px solid #d4af37;
-            padding: 2px 8px;
-            border-radius: 4px;
+            text-align: center;
+            line-height: 1.2;
         }
 
         .subtitle {
             margin: 5px 0 0 0;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #666;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            text-align: center;
         }
 
-        /* Adjust the main container to fit under the new header */
+        .version-tag {
+            font-size: 0.8rem;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            padding: 2px 8px;
+            margin-left: 10px;
+            vertical-align: middle;
+            border-radius: 4px;
+        }
+
+        
         .main-container {
             display: flex;
+            flex: 1; /* This tells the container to take up ALL remaining space below the header */
             width: 100%;
-            height: calc(100vh - 80px); /* This fills the screen below the header */
-            overflow: hidden; /* Prevents double scrollbars */
         }
-
 
        
        /* THE MAIN STAGE (THE LEFT SIDE) */
@@ -68,8 +72,8 @@
             padding: 20px;
         }
 
-       
-       /* THE FLOURISH CONTAINER (THE RINGS) */
+        /* THE FLOURISH CONTAINER (THE RINGS) */
+        /* THE FLOURISH CONTAINER (THE RINGS) */
         .flourish-embed {
             width: 98%;        /* Uses almost the entire left side */
             max-width: 1200px; /* Increased from 800px to 1200px */
