@@ -22,44 +22,42 @@
 
         .master-header {
             background-color: #ffffff;
-            padding: 15px 30px; /* Increased padding slightly for breathing room */
-            border-bottom: 3px solid #d4af37;
+            padding: 5px 30px; /* Minimal vertical padding */
+            border-bottom: 2px solid #d4af37;
             display: flex;
-            flex-direction: column; /* Stacks Title and Subtitle vertically */
-            align-items: center;    /* Centers everything horizontally */
-            justify-content: center;
+            align-items: center; /* Aligns everything on one horizontal line */
+            justify-content: flex-start; /* Keeps everything to the left */
+            height: 45px; /* Forced slim height */
             width: 100%;
             box-sizing: border-box;
         }
 
         .master-header h1 {
             margin: 0;
-            font-size: 1.6rem; /* Restored size for readability */
-            letter-spacing: 3px;
+            font-size: 1.1rem; /* Smaller font to fit on one line */
+            letter-spacing: 2px;
             color: #222;
-            text-align: center;
-            line-height: 1.2;
+            white-space: nowrap; /* Prevents text from wrapping to a second line */
         }
 
         .subtitle {
-            margin: 5px 0 0 0;
-            font-size: 0.85rem;
-            color: #666;
+            margin: 0 0 0 20px; /* Pushes the subtitle to the right of the title */
+            font-size: 0.7rem;
+            color: #999;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            text-align: center;
+            letter-spacing: 1px;
+            white-space: nowrap;
         }
 
         .version-tag {
-            font-size: 0.8rem;
+            font-size: 0.65rem;
             color: #d4af37;
             border: 1px solid #d4af37;
-            padding: 2px 8px;
+            padding: 1px 5px;
             margin-left: 10px;
-            vertical-align: middle;
-            border-radius: 4px;
+            border-radius: 3px;
+            font-weight: bold;
         }
-
         
              
        /* THE MAIN STAGE (THE LEFT SIDE) */
@@ -72,13 +70,14 @@
             padding: 20px;
         }
 
-        /* THE FLOURISH CONTAINER (THE RINGS) */
-        /* THE FLOURISH CONTAINER (THE RINGS) */
         .flourish-embed {
-            width: 98%;        /* Uses almost the entire left side */
-            max-width: 1200px; /* Increased from 800px to 1200px */
-            margin: 0 auto;    /* Keeps it centered */
-            height: 85vh;      /* Explicitly tells it to take up 85% of the screen height */
+            width: 95%;
+            height: 85vh; /* Tells the rings to only use 85% of the viewport height */
+            max-height: 90%; /* An extra layer of protection against cutting */
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* THE ANALYSIS SIDEBAR (THE RIGHT SIDE) */
