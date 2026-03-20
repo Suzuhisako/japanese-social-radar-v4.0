@@ -14,11 +14,47 @@
             overflow: hidden;
         }
 
+        .master-header {
+        background-color: #ffffff;
+        padding: 20px 40px;
+        border-bottom: 3px solid #d4af37; /* The signature gold line */
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        z-index: 100;
+        }
+
+        .master-header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            letter-spacing: 4px;
+            color: #222;
+            font-weight: 800;
+        }
+
+        .version-tag {
+            font-size: 0.9rem;
+            color: #d4af37;
+            vertical-align: middle;
+            margin-left: 10px;
+            border: 1px solid #d4af37;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .subtitle {
+            margin: 5px 0 0 0;
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Adjust the main container to fit under the new header */
         .main-container {
             display: flex;
             width: 100%;
-            height: 100%;
+            height: calc(100vh - 90px); /* Subtracts header height */
         }
+
 
         /* 1. Chart Section (Left) */
         .chart-section {
@@ -70,14 +106,20 @@
             color: #2c3e50;
             font-family: 'Georgia', serif;
             font-style: italic;
-            transition: opacity 0.3s ease;
+            /*transition: opacity 0.3s ease;*/
             animation: fadeIn 0.5s;
+            transition: all 0.5s ease-in-out;
+        }
+
+        /* This class will be toggled by the script */
+        .updated-text {
+            animation: slideIn 0.6s ease-out;
         }
 
        
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         #instruction-note {
@@ -96,6 +138,12 @@
     </style>
 </head>
 <body>
+    <header class="master-header">
+        <div class="logo-area">
+            <h1>JAPANESE SOCIAL RADAR <span class="version-tag">v4.0</span></h1>
+            <p class="subtitle">A Behavioral Dictionary & Cultural OS</p>
+        </div>
+    </header>
 
     <div class="main-container">
         <section class="chart-section">
@@ -175,6 +223,9 @@
                     summaryBox.style.opacity = "1";
                     // Display the matching analysis text
                     summaryBox.innerHTML = "<strong>" + key + "</strong><br><br>" + radarData[key].summary;
+                    summaryBox.classList.remove('updated-text');
+                    void summaryBox.offsetWidth; // Trigger a tiny "reflow" to restart animation
+                    summaryBox.classList.add('updated-text');
                     
                     // Scroll sidebar to top
                     summaryBox.closest('.info-section').scrollTop = 0;
