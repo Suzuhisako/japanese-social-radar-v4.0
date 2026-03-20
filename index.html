@@ -52,36 +52,39 @@
         .main-container {
             display: flex;
             width: 100%;
-            height: calc(100vh - 90px); /* Subtracts header height */
+            height: calc(100vh - 80px); /* This fills the screen below the header */
+            overflow: hidden; /* Prevents double scrollbars */
         }
 
 
-        /* 1. Chart Section (Left) */
+       
+       /* THE MAIN STAGE (THE LEFT SIDE) */
         .chart-section {
-            flex: 2;
-            position: relative;
-            background: white;
+            flex: 3; 
+            background: #fdfdfd; 
+            display: flex;
+            align-items: center;    /* Vertical Center */
+            justify-content: center; /* Horizontal Center */
+            padding: 20px;
         }
 
-        
-        .flourish-iframe-bridge {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
+        /* THE FLOURISH CONTAINER (THE RINGS) */
+        .flourish-embed {
+            width: 90%;  
+            max-width: 800px; 
+            margin: 0 auto; /* Extra safety to keep it centered */
         }
 
-        /* 2. Info Sidebar (Right) */
+        /* THE ANALYSIS SIDEBAR (THE RIGHT SIDE) */
         .info-section {
-            flex: 1;
+            flex: 1; 
+            min-width: 350px;
             max-width: 450px;
             padding: 40px;
             background-color: #ffffff;
-            border-left: 2px solid #d4af37; /* The Gold Standard */
+            border-left: 2px solid #d4af37; 
             overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.05);
+            box-shadow: -10px 0 20px rgba(0,0,0,0.03);
         }
 
         .analysis-header {
