@@ -149,24 +149,29 @@
 
        @media (max-width: 768px) {
             body { 
-                overflow: auto; /* Allow the whole page to scroll if a popup is tall */
+                overflow: auto !important; /* Allow the whole page to breathe */
             }
+            
             .main-container { 
                 flex-direction: column; 
-                overflow: visible; /* Prevent clipping of popups */
+                height: auto; /* Let the container grow if the panel is large */
+                overflow: visible !important; 
             }
+        
             .chart-section { 
-                height: 65vh; 
+                height: 70vh; /* Give the rings a fixed area */
                 width: 100vw; 
                 flex: none;
-                z-index: 1; /* Keep chart lower than the scrollable text below it */
+                overflow: visible !important; /* CRITICAL: Allows the Panel to show up */
+                position: relative;
+                z-index: 10;
             }
+        
             .info-section { 
                 max-width: 100%; 
                 border-left: none; 
                 border-top: 3px solid #d4af37; 
-                overflow: visible; /* Ensure the button inside isn't trapped */
-                z-index: 2;
+                z-index: 5; /* Lower than the chart so the Panel slides OVER it */
             }
         }
 
