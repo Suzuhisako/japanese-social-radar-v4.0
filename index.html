@@ -144,10 +144,26 @@
         }
 
        @media (max-width: 768px) {
-            body { overflow: auto; }
-            .main-container { flex-direction: column; }
-            .chart-section { height: 65vh; width: 100vw; flex: none; }
-            .info-section { max-width: 100%; border-left: none; border-top: 3px solid #d4af37; }
+            body { 
+                overflow: auto; /* Allow the whole page to scroll if a popup is tall */
+            }
+            .main-container { 
+                flex-direction: column; 
+                overflow: visible; /* Prevent clipping of popups */
+            }
+            .chart-section { 
+                height: 65vh; 
+                width: 100vw; 
+                flex: none;
+                z-index: 1; /* Keep chart lower than the scrollable text below it */
+            }
+            .info-section { 
+                max-width: 100%; 
+                border-left: none; 
+                border-top: 3px solid #d4af37; 
+                overflow: visible; /* Ensure the button inside isn't trapped */
+                z-index: 2;
+            }
         }
 
     </style>
