@@ -11,16 +11,13 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            /* CHANGE: Allow overflow on mobile so popups can be seen */
-            overflow-x: hidden; 
-            overflow-y: auto; 
+            overflow: hidden; /* This keeps the whole screen from scrolling */
         }
         
         .main-container {
             display: flex;
-            flex: 1;
-            /* CHANGE: Remove overflow hidden so popups aren't clipped */
-            overflow: visible !important; 
+            flex: 1; /* This tells the map/sidebar to take ALL remaining space */
+            overflow: hidden; 
         }
 
         .master-header {
@@ -64,31 +61,29 @@
         
              
        /* THE LEFT SIDE (CHART GALLERY) */
-         /* THE LEFT SIDE (CHART GALLERY) */
         .chart-section {
             flex: 4; 
             background: #fdfdfd; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
+            display: flex;           /* Turns on the centering engine */
+            align-items: center;     /* Centers vertically (top to bottom) */
+            justify-content: center; /* Centers horizontally (left to right) */
+            height: 100%;            /* Fills the full height of the container */
             position: relative;
-            padding: 0;
-            /* ADD THIS: Ensure the container doesn't chop off the popups */
-            overflow: visible !important;
+            padding: 0;              /* Removes any lopsided padding */
+            pointer-events: none; /* Allows clicks to pass through the empty background */
         }
-                
+        
         /* THE RINGS (INSIDE THE GALLERY) */
         .flourish-embed {
-            width: 90% !important;
-            max-width: 1000px;
-            margin: 0 auto !important;
+            width: 90% !important;   /* Uses 90% of the available LEFT space */
+            max-width: 1000px;       /* Prevents it from getting too massive */
+            margin: 0 auto !important; /* Forces equal margins on left and right */
             display: flex;
             justify-content: center;
             align-items: center;
-            /* ADD THESE TWO LINES */
+            pointer-events: auto; /* Re-enables clicks for the actual chart and popups */
             position: relative;
-            z-index: 9999 !important; /* Forces popups to sit ABOVE the sidebar */
+            z-index: 5;
         }
 
         /* THE ANALYSIS SIDEBAR (THE RIGHT SIDE) */
@@ -147,34 +142,13 @@
             line-height: 1.6;
         }
 
-       @media (max-width: 768px) {
-            body { 
-                overflow: auto !important; /* Allow the whole page to breathe */
-            }
-            
-            .main-container { 
-                flex-direction: column; 
-                height: auto; /* Let the container grow if the panel is large */
-                overflow: visible !important; 
-            }
-        
-            .chart-section { 
-                height: 70vh; /* Give the rings a fixed area */
-                width: 100vw; 
-                flex: none;
-                overflow: visible !important; /* CRITICAL: Allows the Panel to show up */
-                position: relative;
-                z-index: 10;
-            }
-        
-            .info-section { 
-                max-width: 100%; 
-                border-left: none; 
-                border-top: 3px solid #d4af37; 
-                z-index: 5; /* Lower than the chart so the Panel slides OVER it */
-            }
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            body { overflow: auto; }
+            .main-container { flex-direction: column; }
+            .chart-section { height: 65vh; width: 100vw; flex: none; }
+            .info-section { max-width: 100%; border-left: none; border-top: 3px solid #d4af37; }
         }
-
     </style>
 </head>
 <body>
@@ -203,7 +177,7 @@
             <div id="ai-summary">
                     </div>
             <p style="font-size: 14px; color: #190e0e; margin-top: 20px; font-style: italic;">
-                💡 Tip: Click on the popup and close it to select a new cultural phrase.
+                💡 Tip: Click on the popup and close the popup on the map to select a new cultural phrase.
             </p>
             
         </section>
@@ -212,60 +186,148 @@
     <script>
         // THE DATA MIRROR (Your 20 Masterpiece Analyses)
         const radarData = {
-            "zenshoshimasu": { audio: "zensho.wav", summary: "The 'Stalling Commitment.' While it translates to 'doing my best,' it is a strategic ambiguity used to exit a conversation without making a promise. It suggests effort will be made, but provides a safety net if no result follows." },
-            "kentoukadaito": { audio: "kentou.wav", summary: "The 'Polite Shelf.' Signals that a proposal is under 'serious consideration' or is a 'task for future study.' In reality, this usually means the idea has been shelved indefinitely to avoid the friction of a direct 'no'." },
-            "chottomuzukashii": { audio: "muzukashii.wav", summary: "The 'Invisible Wall.' Literally means 'a little difficult,' but in a Japanese social context, it is a definitive 'impossible.' Saying 'no' directly is considered rude; this phrase protects the relationship while closing the door." },
-            "maemukinikentou": { audio: "maemuki.wav", summary: "The 'Positive Dead-End.' By promising 'positive consideration,' the speaker maintains a friendly atmosphere while buying time. It is a classic business tactic to delay a final decision without appearing uncooperative." },
-            "yoroshikune": { audio: "yoroshiku.wav", summary: "The 'Hierarchical Handoff.' Often used by seniors to juniors. While it sounds like a friendly 'nice to meet you' or 'thanks,' it often implies: 'I am handing full responsibility for this task to you now; don’t let me down.'" },
-            "goikenoukagaitai": { audio: "goiken.wav", summary: "The 'Performative Consensus.' Seeking an 'opinion' on a decision that has usually already been finalized behind the scenes (Nemawashi). It is a ritual to ensure everyone feels included in the group harmony." },
-            "sekininotsukan": { audio: "tsukan.wav", summary: "The 'Passive Apology.' Translates to 'feeling the weight of responsibility.' It is a formal way to acknowledge a mistake while subtly avoiding personal blame by framing the issue as a heavy, abstract burden." },
-            "isoganakuteii": { audio: "isoganakute.wav", summary: "The 'Patience Test.' On the surface, it means 'no rush.' However, because of the high-context culture, it often signals that the speaker is actually waiting and expects high-quality results exactly when they are needed." },
-            "aruimide": { audio: "aruimi.wav", summary: "The 'Tone Shifter.' Means 'in a sense.' It acts as a linguistic shield, signaling that the speaker is about to offer a critique or a shift in perspective that might otherwise sound too harsh or direct." },
-            "gokaioosorezu": { audio: "gokai.wav", summary: "The 'Bluntness Warning.' 'Without fear of being misunderstood.' This is a polite disclaimer used right before the speaker says something unusually direct, blunt, or potentially controversial." },
-            "korewakorede": { audio: "korewa.wav", summary: "The 'Backhanded Acceptance.' It acknowledges that the current result has 'its own value,' which is a subtle way of saying it wasn't exactly what was wanted or expected." },
-            "kikudakekikimasu": { audio: "kikudake.wav", summary: "The 'Closed Ear.' 'I will listen.' It establishes that the speaker is fulfilling their social duty to hear you out, but they have no intention of changing their mind or taking action based on what you say." },
-            "maatamatama": { audio: "tamatama.wav", summary: "The 'Harmony Shield.' Attributing success to 'coincidence' or 'luck' rather than skill. This humility prevents the speaker from standing out too much, which preserves the balance and ego of the group." },
-            "maasoudesune": { audio: "soudesu-ne.wav", summary: "The 'Stalling Agreement.' A neutral filler used when the speaker disagrees or is surprised but wants to avoid an immediate confrontation. It buys seconds of thinking time to formulate a safe response." },
-            "wakarimashita": { audio: "wakarimashita.wav", summary: "The 'Reception Receipt.' Simply means 'I have received the information.' It is often mistaken by Westerners as 'I agree,' but it strictly means 'I understand your words,' not necessarily your intent." },
-            "iroiroarimashite": { audio: "iroiro.wav", summary: "The 'Privacy Gate.' 'Various things happened.' This is a firm boundary marker. It tells the listener that the topic is complicated or personal, and that they should stop asking for further details." },
-            "oisogashiitokoro": { audio: "oisogashii.wav", summary: "The 'Social Lubricant.' A standard greeting acknowledging the other person's busyness. It is used to soften the impact of an upcoming request or interruption, showing respect for their time." },
-            "kouiumonodesuga": { audio: "kouiu.wav", summary: "The 'Identity Anchor.' Used during business card exchange. It goes beyond a name, signaling the speaker's place within their organization and the hierarchy of the current meeting." },
-            "benkyousasete": { audio: "benkyou.wav", summary: "The 'Price Negotiator.' Literally 'let me study.' In a commercial context, this is the standard code for 'give me a discount' or 'lower your quote,' framed as a learning opportunity for the speaker." },
-            "souiukotonara": { audio: "souiu.wav", summary: "The 'Reluctant Concession.' 'If that is the case.' It signals that the speaker is agreeing to terms they aren't entirely happy with, but are accepting due to the circumstances or pressure." }
+            "zenshoshi": {
+                fullTitle: "善処します (Zenshoshimasu)",
+                audioUrl: "audio/zensho.wav",
+                content: "In business, this is a polite 'I will look into it,' but often functions as a way to end a negotiation without a 'Yes.' It maintains harmony while avoiding commitment."
+            },
+            "kentoukada": {
+                fullTitle: "検討課題とさせていただきます (Kentoukadaitosaseteitadakimasu)",
+                audioUrl: "audio/kentou.wav",
+                content: "Literally 'making it a matter for consideration.' This signals that the proposal has hit a significant roadblock in the hierarchy."
+            },
+            "muzukashii": {
+                fullTitle: "ちょっと難しい (Chottomuzukashii)",
+                audioUrl: "audio/muzukashii.wav",
+                content: "A textbook 'Soft No.' In the Cultural OS, 'difficult' means 'impossible,' and 'chotto' is the shock absorber for the listener."
+            },
+            "maemukini": {
+                fullTitle: "前向きに検討いたします (Maemukinikentouitashimausu)",
+                audioUrl: "audio/maemuki.wav",
+                content: "A positive-sounding buffer that effectively delays a decision. It keeps the relationship warm without requiring immediate action."
+            },
+            "yoroshiku": {
+                fullTitle: "よろしくね (Yoroshikune)",
+                audioUrl: "audio/yoroshiku.wav",
+                content: "The casual but firm version of 'Yoroshiku.' Used by superiors to signal that a task is now the subordinate's responsibility."
+            },
+            "goikenouka": {
+                fullTitle: "ご意見を伺いたい (Goikenoukagaitai)",
+                audioUrl: "audio/goiken.wav",
+                content: "A vertical invitation for feedback. While it asks for an opinion, it acknowledges the status gap by using humble-polite phrasing."
+            },
+            "sekinino": {
+                fullTitle: "責任を痛感し (Sekininotsukanshi)",
+                audioUrl: "audio/tsukan.wav",
+                content: "A heavy phrase used in formal accountability. It signals that the speaker 'keenly feels the responsibility' of a failure."
+            },
+            "isoganaktu": {
+                fullTitle: "急がなくていいです (Isoganakuteiidesu)",
+                audioUrl: "audio/isoganakute.wav",
+                content: "Depending on context, this is either genuine kindness or a sign that the project has lost priority in the eyes of leadership."
+            },
+            "aruimide": {
+                fullTitle: "ある意味で (Aruimide)",
+                audioUrl: "audio/aruimi.wav",
+                content: "A conversational pivot. It allows the speaker to introduce a conflicting view by framing it as just 'one way' of looking at things."
+            },
+            "gokaiooso": {
+                fullTitle: "誤解を恐れずに (Gokaioosorezuni)",
+                audioUrl: "audio/gokai.wav",
+                content: "The 'Directness Shield.' The speaker is warning you that they are about to break social protocol and speak bluntly."
+            },
+            "korewakore": {
+                fullTitle: "これはこれで (Korewakorede)",
+                audioUrl: "audio/korewa.wav",
+                content: "Implies that while the current result is acceptable, it is separate from the original goal. A subtle form of disappointment."
+            },
+            "kikudake": {
+                fullTitle: "聞くだけ聞きます (Kikudakekikimasu)",
+                audioUrl: "audio/kikudake.wav",
+                content: "A boundary phrase. The speaker will listen out of politeness, but they are signaling they have no power or intent to change the outcome."
+            },
+            "maatamata": {
+                fullTitle: "まあ、たまたま (Maa,tamatama)",
+                audioUrl: "audio/tamatama.wav",
+                content: "The 'Humility OS.' Attributing success to luck ('tamatama') prevents the speaker from standing out too much from the group."
+            },
+            "maasoudesu": {
+                fullTitle: "まあ、そうですね (Maa,soudesune)",
+                audioUrl: "audio/soudesune.wav",
+                content: "The ultimate neutral filler. It acknowledges the other person's statement without agreeing, disagreeing, or committing to a thought."
+            },
+            "wakarima": {
+                fullTitle: "わかりました (Wakarimashita)",
+                audioUrl: "audio/wakarimashita.wav",
+                content: "Signifies receipt of information, not agreement. A critical distinction in the Japanese Social Radar."
+            },
+            "iroiroari": {
+                fullTitle: "いろいろありまして (Iroiroarimashite)",
+                audioUrl: "audio/iroiro.wav",
+                content: "A polite way to close off personal or difficult topics. It translates to 'various things happened,' signaling: 'Please don't ask more.'"
+            },
+            "oisogashii": {
+                fullTitle: "お忙しいところ (Oisogashiitokoro)",
+                audioUrl: "audio/oisogashii.wav",
+                content: "The standard 'Opening Lubricant.' It acknowledges the other person's value by assuming they are busy and important."
+            },
+            "kouiumono": {
+                fullTitle: "こういう者ですが (Kouiumonodesuga)",
+                audioUrl: "audio/kouiu.wav",
+                content: "Used during Meishi-koukan (business card exchange). It frames the speaker as 'someone like this,' a traditional humble posture."
+            },
+            "benkyousa": {
+                fullTitle: "勉強させてください (Benkyousasetekudasai)",
+                audioUrl: "audio/benkyou.wav",
+                content: "The polite negotiator's code for: 'Please give me a discount' or 'Please lower the price so I can learn from this deal.'"
+            },
+            "souiukoto": {
+                fullTitle: "そういうことなら (Souiukotonara)",
+                audioUrl: "audio/souiu.wav",
+                content: "Signals the transition from 'Negotiation' to 'Agreement.' It indicates the logic has been accepted and the deal is moving forward."
+            }
         };
 
-       // Listen for the Flourish "click" event
+
         window.addEventListener('message', function(e) {
+            // 1. Check if the message is actually from Flourish
             if (e.data && e.data.type === 'click') {
-                const selectedPhrase = e.data.data[0]; // Gets the phrase from the ring
-                updateSidebar(selectedPhrase);
                 
-                // AUTO-SCROLL for Mobile: 
-                // This jumps the user down to the analysis so they see it immediately.
-                if (window.innerWidth <= 768) {
-                    document.querySelector('.info-section').scrollIntoView({ behavior: 'smooth' });
+                // 2. Identify the phrase (Flourish usually puts it here)
+                const phrase = e.data.data.label || e.data.data.name;
+
+                console.log("Clicked phrase:", phrase); // This helps you debug in the browser console
+
+                // 3. Match it to your EXISTING radarData
+                if (phrase && radarData[phrase]) {
+                    displayAnalysis(phrase);
                 }
             }
         });
-        
-        function updateSidebar(phrase) {
+
+        function displayAnalysis(phrase) {
             const output = document.getElementById('ai-summary');
-            
-            // We match the phrase to your scenario data
-            const data = scenarioData[phrase]; 
-            
+            const data = radarData[phrase]; // Using your original variable name
+
+            // 4. Inject the Masterpiece layout into the sidebar
             output.innerHTML = `
-                <div class="analysis-header">
-                    <h2>${data.fullTitle}</h2>
-                    <div class="audio-container" style="margin: 15px 0;">
-                        <audio controls style="width: 100%; height: 40px;">
-                            <source src="${data.audioUrl}" type="audio/wav">
-                            Your browser does not support the audio element.
-                        </audio>
-                    </div>
+                <div class="analysis-header" style="animation: fadeIn 0.5s;">
+                    <h2 style="color: #d4af37; font-size: 1.2rem; margin-bottom: 5px;">${data.fullTitle}</h2>
+                    <div style="font-size: 0.8rem; color: #888; text-transform: uppercase; margin-bottom: 15px;">Cultural OS Analysis</div>
+                    
+                    <audio controls style="width: 100%; margin-bottom: 20px;">
+                        <source src="${data.audioUrl}" type="audio/wav">
+                    </audio>
                 </div>
-                <div class="updated-text">${data.content}</div>
+                <div class="analysis-body" style="font-family: 'Georgia', serif; line-height: 1.8; font-style: italic; color: #2c3e50;">
+                    ${data.content}
+                </div>
             `;
+
+            // 5. Mobile Auto-Scroll
+            if (window.innerWidth <= 768) {
+                output.scrollIntoView({ behavior: 'smooth' });
+            }
         }
     </script>
 
