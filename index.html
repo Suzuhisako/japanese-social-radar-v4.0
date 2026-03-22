@@ -145,6 +145,17 @@
             .chart-section { height: 65vh; width: 100vw; flex: none; }
             .info-section { max-width: 100%; border-left: none; border-top: 3px solid #d4af37; }
         }
+
+        @media (max-width: 600px) {
+        .chart-section {
+            height: 60vh; /* Gives the rings more vertical room to grow */
+        }
+        .flourish-embed {
+            height: 100% !important;
+            width: 120% !important; /* Slightly "over-sizing" to zoom in */
+            margin-left: -10%;      /* Centering the over-sized chart */
+        }
+    }
     </style>
 </head>
 <body>
