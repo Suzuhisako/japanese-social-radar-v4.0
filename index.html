@@ -290,44 +290,71 @@
 
 
         window.addEventListener('message', function(e) {
-            // 1. Check if the message is actually from Flourish
             if (e.data && e.data.type === 'click') {
-                
-                // 2. Identify the phrase (Flourish usually puts it here)
+                // 1. Get the phrase from Flourish
                 const phrase = e.data.data.label || e.data.data.name;
-
-                console.log("Clicked phrase:", phrase); // This helps you debug in the browser console
-
-                // 3. Match it to your EXISTING radarData
-                if (phrase && radarData[phrase]) {
-                    displayAnalysis(phrase);
+                
+                // 2. Trigger the "Masterpiece" update
+                if (phrase) {
+                    triggerRadar(phrase);
                 }
             }
         });
 
-        function displayAnalysis(phrase) {
-            const output = document.getElementById('ai-summary');
-            const data = radarData[phrase]; // Using your original variable name
+        function triggerRadar(name) {
+            const summaryBox = document.getElementById('ai-summary');
+            const instruction = document.getElementById('instruction-note');
+            
+            // UI Feedback: Start "Thinking" effect
+            if (instruction) instruction.style.display = 'none';
+            summaryBox.style.opacity = "0.5";
+            summaryBox.innerHTML = `<div style="color: #d4af37;">🔍 Analyzing subtext for "${name}"...</div>`;
 
-            // 4. Inject the Masterpiece layout into the sidebar
-            output.innerHTML = `
-                <div class="analysis-header" style="animation: fadeIn 0.5s;">
-                    <h2 style="color: #d4af37; font-size: 1.2rem; margin-bottom: 5px;">${data.fullTitle}</h2>
-                    <div style="font-size: 0.8rem; color: #888; text-transform: uppercase; margin-bottom: 15px;">Cultural OS Analysis</div>
+            setTimeout(() => {
+                const cleanName = name.trim().toLowerCase();
+                
+                // 3. Find the key in radarData (Case-insensitive match)
+                const key = Object.keys(radarData).find(k => k.toLowerCase() === cleanName);
+
+                if (key && radarData[key]) {
+                    const data = radarData[key];
+                    summaryBox.style.opacity = "1";
                     
-                    <audio controls style="width: 100%; margin-bottom: 20px;">
-                        <source src="${data.audioUrl}" type="audio/wav">
-                    </audio>
-                </div>
-                <div class="analysis-body" style="font-family: 'Georgia', serif; line-height: 1.8; font-style: italic; color: #2c3e50;">
-                    ${data.content}
-                </div>
-            `;
+                    // 4. Inject the FULL Masterpiece Layout
+                    summaryBox.innerHTML = `
+                        <div class="analysis-header" style="animation: fadeIn 0.5s;">
+                            <h2 style="color: #d4af37; font-size: 1.2rem; margin-bottom: 5px;">${data.fullTitle}</h2>
+                            <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">
+                                Cultural OS Analysis
+                            </div>
+                            
+                            <audio controls style="width: 100%; margin-bottom: 20px; height: 35px;">
+                                <source src="${data.audioUrl}" type="audio/wav">
+                                Your browser does not support audio.
+                            </audio>
+                        </div>
+                        <div class="analysis-body" style="font-family: 'Georgia', serif; line-height: 1.8; font-style: italic; color: #2c3e50; font-size: 1.1rem;">
+                            ${data.content}
+                        </div>
+                    `;
 
-            // 5. Mobile Auto-Scroll
-            if (window.innerWidth <= 768) {
-                output.scrollIntoView({ behavior: 'smooth' });
-            }
+                    // 5. Reset animations and scroll
+                    summaryBox.classList.remove('updated-text');
+                    void summaryBox.offsetWidth; 
+                    summaryBox.classList.add('updated-text');
+                    summaryBox.closest('.info-section').scrollTop = 0;
+
+                    // 6. Mobile Auto-Scroll
+                    if (window.innerWidth <= 768) {
+                        summaryBox.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    
+                    console.log("✅ Radar Updated:", key);
+                } else {
+                    summaryBox.style.opacity = "1";
+                    summaryBox.innerHTML = `⚠️ No analysis found for "${name}". Check if the key matches radarData exactly.`;
+                }
+            }, 400); 
         }
     </script>
 
