@@ -80,15 +80,15 @@
                 
         /* THE RINGS (INSIDE THE GALLERY) */
         .flourish-embed {
-            width: 90% !important;   /* Uses 90% of the available LEFT space */
-            max-width: 1000px;       /* Prevents it from getting too massive */
-            margin: 0 auto !important; /* Forces equal margins on left and right */
+            width: 90% !important;
+            max-width: 1000px;
+            margin: 0 auto !important;
             display: flex;
             justify-content: center;
             align-items: center;
-            pointer-events: auto; /* Re-enables clicks for the actual chart and popups */
+            /* ADD THESE TWO LINES */
             position: relative;
-            z-index: 5;
+            z-index: 9999 !important; /* Forces popups to sit ABOVE the sidebar */
         }
 
         /* THE ANALYSIS SIDEBAR (THE RIGHT SIDE) */
