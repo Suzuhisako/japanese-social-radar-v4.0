@@ -61,6 +61,7 @@
         
              
        /* THE LEFT SIDE (CHART GALLERY) */
+         /* THE LEFT SIDE (CHART GALLERY) */
         .chart-section {
             flex: 4; 
             background: #fdfdfd; 
@@ -70,6 +71,7 @@
             height: 100%;            /* Fills the full height of the container */
             position: relative;
             padding: 0;              /* Removes any lopsided padding */
+            pointer-events: none; /* Allows clicks to pass through the empty background */
         }
         
         /* THE RINGS (INSIDE THE GALLERY) */
@@ -80,6 +82,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            pointer-events: auto; /* Re-enables clicks for the actual chart and popups */
+            position: relative;
+            z-index: 5;
         }
 
         /* THE ANALYSIS SIDEBAR (THE RIGHT SIDE) */
