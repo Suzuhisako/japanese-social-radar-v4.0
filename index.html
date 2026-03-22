@@ -293,6 +293,8 @@
             if (e.data && e.data.type === 'click') {
                 // 1. Get the phrase from Flourish
                 const phrase = e.data.data.label || e.data.data.name;
+
+                alert("Flourish is sending: " + phrase);
                 
                 // 2. Trigger the "Masterpiece" update
                 if (phrase) {
