@@ -311,19 +311,27 @@
 
 
         window.addEventListener('message', function(e) {
-            // 1. Log everything to find the hidden data
-            console.log("System Heartbeat:", e.data);
+            // 1. Log to see the full data structure in your console
+            console.log("Flourish Handshake Received:", e.data);
         
-            // 2. Look for the triggerPopup (Standard) OR the info (Fallback)
+            // 2. Look for the 'triggerPopup' or 'info' signal
             if (e.data && (e.data.method === 'triggerPopup' || e.data.type === 'info')) {
-                const data = e.data.data || e.data.model || {};
                 
-                // We look for 'label' which is the default Sunburst phrase column
-                const phrase = data.label || data.name || data.Phrase;
+                // Flourish stores the slice details in .data or .model
+                const sliceData = e.data.data || e.data.model || {};
+                
+                // We look for 'Phrase' or 'label' based on your Flourish column headers
+                const phrase = sliceData.Phrase || sliceData.label || sliceData.phrase;
         
                 if (phrase) {
-                    console.log("🎯 Connection Restored:", phrase);
+                    console.log("🎯 Match Found! Analyzing:", phrase);
+                    
+                    // This triggers your 'Masterpiece' sidebar update
                     triggerRadar(phrase.trim());
+                    
+                    // Optional: Hide the instruction note once the first phrase is clicked
+                    const note = document.getElementById('instruction-note');
+                    if (note) note.style.display = 'none';
                 }
             }
         });
