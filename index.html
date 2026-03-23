@@ -142,6 +142,13 @@
             line-height: 1.6;
         }
 
+        /* This hides the actual Flourish popup bubble from view */
+        .flourish-popup {
+            display: none !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+
         /* Mobile Adjustments */
         @media (max-width: 768px) {
             body { overflow: auto; }
@@ -283,17 +290,18 @@
 
 
         window.addEventListener('message', function(e) {
-            // 1. Log everything so we can see the hidden data
-            console.log("System Check: Message Detected", e.data);
+            // Log the raw data to see exactly what Flourish is whispering
+            console.log("Raw Message:", e.data);
         
-            // 2. Look for the 'click' type OR the 'triggerPopup' method
-            if (e.data && (e.data.type === 'click' || e.data.method === 'triggerPopup')) {
+            // Some templates use 'triggerPopup', others use 'click'
+            if (e.data && (e.data.method === 'triggerPopup' || e.data.type === 'click')) {
                 
-                // Flourish sometimes hides the label inside 'data' or 'model'
-                const phrase = e.data.data?.label || e.data.model?.label || e.data.data?.name;
+                // We look in every possible 'pocket' for the phrase
+                const data = e.data.data || e.data.model || {};
+                const phrase = data.label || data.Phrase || data.name;
         
                 if (phrase) {
-                    console.log("Target Acquired:", phrase);
+                    console.log("Success! Found Phrase:", phrase);
                     triggerRadar(phrase);
                 }
             }
