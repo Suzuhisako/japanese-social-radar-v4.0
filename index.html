@@ -65,18 +65,18 @@
         }
         
              
-       /* THE LEFT SIDE (CHART GALLERY) */
+       /* 1. LOCK THE CONTAINER */
         .chart-section {
             flex: 4; 
             background: #fdfdfd; 
             display: flex;           
             align-items: center;     
             justify-content: center; 
-            height: 100%;          
+            height: 100%;           /* Fills the main-container */
+            min-height: 700px;      /* FORCE at least 700px */
             position: relative;
             padding: 0; 
-            /* pointer-events: none;  <-- DELETE THIS LINE to allow clicks! */
-            pointer-events: auto;    /* This ensures you can click the rings */
+            pointer-events: auto;    
         }
         
         
@@ -138,11 +138,11 @@
             line-height: 1.6;
         }
 
-        /* This stops the "Jumping" and helps the Flourish engine stabilize */
+        /* 2. LOCK THE EMBED DIV */
         .flourish-embed {
-            pointer-events: auto !important;
+            width: 95% !important;
+            height: 700px !important; /* LOCK THIS HEIGHT */
             display: block !important;
-            min-height: 600px !important;
         }
         
          /* Keep this so the script can "read" the text inside */
@@ -152,10 +152,11 @@
             pointer-events: none !important; /* Doesn't block clicks */
         }
         
-        /* Keep your iframe sizing exactly like this */
+        /* 3. LOCK THE IFRAME ITSELF */
         .flourish-embed iframe {
             width: 100% !important;
-            height: 600px !important;
+            height: 700px !important; /* LOCK THIS HEIGHT */
+            max-height: 700px !important;
             border: none;
         }
         
