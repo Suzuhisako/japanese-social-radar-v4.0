@@ -142,11 +142,13 @@
             line-height: 1.6;
         }
 
-        /* This hides the actual Flourish popup bubble from view */
+        /* Make the Flourish popup invisible so the user only sees the Sidebar update */
         .flourish-popup {
-            display: none !important;
-            visibility: hidden !important;
+            opacity: 0 !important;
             pointer-events: none !important;
+            height: 0px !important;
+            width: 0px !important;
+            overflow: hidden !important;
         }
 
         /* Mobile Adjustments */
@@ -289,20 +291,20 @@
         };
 
 
-        window.addEventListener('message', function(e) {
-            // Log the raw data to see exactly what Flourish is whispering
-            console.log("Raw Message:", e.data);
+       window.addEventListener('message', function(e) {
+            // 1. Log to see if the message is coming through
+            console.log("Message Received:", e.data);
         
-            // Some templates use 'triggerPopup', others use 'click'
-            if (e.data && (e.data.method === 'triggerPopup' || e.data.type === 'click')) {
+            // 2. Catch the message from your JavascriptTrigger column
+            if (e.data && e.data.type === 'click') {
+                const phrase = e.data.data.label;
+                triggerRadar(phrase);
                 
-                // We look in every possible 'pocket' for the phrase
-                const data = e.data.data || e.data.model || {};
-                const phrase = data.label || data.Phrase || data.name;
-        
-                if (phrase) {
-                    console.log("Success! Found Phrase:", phrase);
-                    triggerRadar(phrase);
+                // 3. OPTIONAL: Tell Flourish to close the popup now that we have the data
+                // This keeps the UI clean
+                const flourishIframe = document.querySelector('iframe');
+                if (flourishIframe) {
+                    flourishIframe.contentWindow.postMessage({ type: 'close_popup' }, '*');
                 }
             }
         });
