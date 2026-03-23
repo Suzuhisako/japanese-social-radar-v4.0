@@ -311,42 +311,44 @@
         };
 
 
-        // A "Global" variable to track what we've already looked at
+        // 1. TRACK THE ACTIVE SELECTION
         window.lastCapturedPhrase = "";
         
+        // 2. THE DEEP-SCRAPER LOOP
         setInterval(function() {
-            // 1. Target the specific internal container Flourish uses for popups
+            // Target the specific inner container Flourish uses for popups
             const popupContent = document.querySelector('.flourish-popup-content-inner');
             
             if (popupContent) {
                 const text = popupContent.innerText;
                 
-                // 2. We look for a 4+ character word (your phrase keys like 'maatamata')
-                // We specifically look for the text after "Phrase " if it exists
+                // Logic: Find the word immediately following the label "Phrase"
                 let captured = "";
                 if (text.includes("Phrase")) {
+                    // Split by "Phrase", take the second half, trim, and take the first word
                     captured = text.split("Phrase")[1].trim().split(/\s+/)[0];
                 } else {
+                    // Fallback: Just grab any word 4+ characters long
                     const match = text.match(/[a-z]{4,}/i);
                     if (match) captured = match[0];
                 }
         
-                // 3. If we found a valid phrase and it's DIFFERENT from the last one
+                // 3. TRIGGER THE RADAR IF IT'S A NEW PHRASE
                 if (captured && captured !== window.lastCapturedPhrase) {
                     window.lastCapturedPhrase = captured;
                     console.log("🎯 Deep-Scrape Success:", captured);
                     
-                    // This runs your Masterpiece logic
+                    // Execute your analysis function
                     if (typeof triggerRadar === "function") {
                         triggerRadar(captured);
                     }
                     
-                    // Hide the 'Welcome' note
+                    // Hide the 'Welcome' message
                     const note = document.getElementById('instruction-note');
                     if (note) note.style.display = 'none';
                 }
             }
-        }, 250); // Checking 4 times per second for maximum responsiveness
+        }, 250);
         
         
         function triggerRadar(name) {
