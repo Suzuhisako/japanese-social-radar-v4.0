@@ -191,8 +191,7 @@
     <div class="main-container">
         <section class="chart-section">
             <div class="flourish-embed flourish-sunburst" data-src="visualisation/28074057">
-                <script src="https://public.flourish.studio/resources/embed.js"></script>
-            </div>
+            <script src="https://public.flourish.studio/resources/embed.js"></script>
         </section>
 
         <section class="info-section">
@@ -311,23 +310,29 @@
         };
 
 
-       window.addEventListener('message', function(e) {
-            // 1. Log the heartbeat
-            if (e.data.method === 'resize') return; // Ignore resize noise
-            console.log("Flourish Signal:", e.data);
-        
-            // 2. Look for the 'triggerPopup' - this is the "official" handshake
-            if (e.data && e.data.method === 'triggerPopup') {
-                const data = e.data.data || {};
+        // 1. Listen for ALL clicks on the page
+        window.addEventListener('click', function(e) {
+            // 2. Wait a tiny bit for Flourish to update its popup
+            setTimeout(() => {
+                // 3. Look inside the Flourish Popup for your Phrase
+                // Flourish puts custom content inside these specific classes
+                const popup = document.querySelector('.flourish-popup-content-inner');
                 
-                // Flourish puts the phrase in the first column of your data (usually 'label')
-                const phrase = data.label || data.name || data.Phrase;
-        
-                if (phrase) {
-                    console.log("🎯 Phrase Captured:", phrase);
-                    triggerRadar(phrase.trim());
+                if (popup) {
+                    // Get the text (e.g., "Analyzing: zenshoshima")
+                    const fullText = popup.innerText;
+                    
+                    // Clean the text to get just the 10-character key
+                    // This looks for your "zenshoshima" style keys
+                    const match = fullText.match(/[a-z]{10}/); 
+                    
+                    if (match) {
+                        const phrase = match[0];
+                        console.log("🎯 Manual Capture Success:", phrase);
+                        triggerRadar(phrase);
+                    }
                 }
-            }
+            }, 200); // 200ms delay gives the popup time to load
         });
         
         
