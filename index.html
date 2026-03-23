@@ -138,25 +138,25 @@
             line-height: 1.6;
         }
 
-        /* Make the Flourish popup invisible but keep the <a> link active */
-        .flourish-popup {
-            opacity: 0 !important;
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-        }
-
-                
-        /* Ensure the Flourish embed takes up the space it needs */
+        /* This stops the "Jumping" and helps the Flourish engine stabilize */
         .flourish-embed {
-            width: 90%;              /* Give it some breathing room */
-            height: auto;
-            min-height: 600px;
+            pointer-events: auto !important;
+            display: block !important;
+            min-height: 600px !important;
         }
-
+        
+         /* Keep this so the script can "read" the text inside */
+        .flourish-popup {
+            visibility: hidden !important; /* Hidden from eyes */
+            opacity: 0 !important;         /* 100% transparent */
+            pointer-events: none !important; /* Doesn't block clicks */
+        }
+        
+        /* Keep your iframe sizing exactly like this */
         .flourish-embed iframe {
             width: 100% !important;
             height: 600px !important;
+            border: none;
         }
         
         /* Update your CSS to this "Super-Target" version */
@@ -310,31 +310,42 @@
         };
 
 
+        // 1. We watch for ANY message, but we also watch the DOM
         window.addEventListener('message', function(e) {
-            // 1. Log to see the full data structure in your console
-            console.log("Flourish Handshake Received:", e.data);
-        
-            // 2. Look for the 'triggerPopup' or 'info' signal
-            if (e.data && (e.data.method === 'triggerPopup' || e.data.type === 'info')) {
-                
-                // Flourish stores the slice details in .data or .model
-                const sliceData = e.data.data || e.data.model || {};
-                
-                // We look for 'Phrase' or 'label' based on your Flourish column headers
-                const phrase = sliceData.Phrase || sliceData.label || sliceData.phrase;
-        
-                if (phrase) {
-                    console.log("🎯 Match Found! Analyzing:", phrase);
-                    
-                    // This triggers your 'Masterpiece' sidebar update
-                    triggerRadar(phrase.trim());
-                    
-                    // Optional: Hide the instruction note once the first phrase is clicked
-                    const note = document.getElementById('instruction-note');
-                    if (note) note.style.display = 'none';
-                }
+            // Keep the logger so we can see if the crash clears
+            if (e.data.method !== 'resize') {
+                console.log("Flourish Activity:", e.data);
             }
         });
+        
+        // 2. This is the "Safety Net": It checks the popup every 300ms
+        setInterval(function() {
+            // Find the Flourish popup text wherever it is on the page
+            const popupContent = document.querySelector('.flourish-popup-content-inner');
+            
+            if (popupContent) {
+                const text = popupContent.innerText;
+                
+                // This looks for your phrase in the popup (e.g., "maatamata")
+                // It matches any word that is at least 4 characters long
+                const match = text.match(/[a-z]{4,}/i); 
+                
+                if (match) {
+                    const capturedPhrase = match[0].trim();
+                    
+                    // Only trigger if it's a NEW phrase to avoid looping
+                    if (window.currentPhrase !== capturedPhrase) {
+                        window.currentPhrase = capturedPhrase;
+                        console.log("🎯 Phrase Captured Manually:", capturedPhrase);
+                        triggerRadar(capturedPhrase);
+                        
+                        // Hide the welcome note
+                        const note = document.getElementById('instruction-note');
+                        if (note) note.style.display = 'none';
+                    }
+                }
+            }
+        }, 300);
         
         
         function triggerRadar(name) {
