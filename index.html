@@ -311,42 +311,42 @@
         };
 
 
-        // 1. We watch for ANY message, but we also watch the DOM
-        window.addEventListener('message', function(e) {
-            // Keep the logger so we can see if the crash clears
-            if (e.data.method !== 'resize') {
-                console.log("Flourish Activity:", e.data);
-            }
-        });
+        // A "Global" variable to track what we've already looked at
+        window.lastCapturedPhrase = "";
         
-        // 2. This is the "Safety Net": It checks the popup every 300ms
         setInterval(function() {
-            // Find the Flourish popup text wherever it is on the page
+            // 1. Target the specific internal container Flourish uses for popups
             const popupContent = document.querySelector('.flourish-popup-content-inner');
             
             if (popupContent) {
                 const text = popupContent.innerText;
                 
-                // This looks for your phrase in the popup (e.g., "maatamata")
-                // It matches any word that is at least 4 characters long
-                const match = text.match(/[a-z]{4,}/i); 
-                
-                if (match) {
-                    const capturedPhrase = match[0].trim();
+                // 2. We look for a 4+ character word (your phrase keys like 'maatamata')
+                // We specifically look for the text after "Phrase " if it exists
+                let captured = "";
+                if (text.includes("Phrase")) {
+                    captured = text.split("Phrase")[1].trim().split(/\s+/)[0];
+                } else {
+                    const match = text.match(/[a-z]{4,}/i);
+                    if (match) captured = match[0];
+                }
+        
+                // 3. If we found a valid phrase and it's DIFFERENT from the last one
+                if (captured && captured !== window.lastCapturedPhrase) {
+                    window.lastCapturedPhrase = captured;
+                    console.log("🎯 Deep-Scrape Success:", captured);
                     
-                    // Only trigger if it's a NEW phrase to avoid looping
-                    if (window.currentPhrase !== capturedPhrase) {
-                        window.currentPhrase = capturedPhrase;
-                        console.log("🎯 Phrase Captured Manually:", capturedPhrase);
-                        triggerRadar(capturedPhrase);
-                        
-                        // Hide the welcome note
-                        const note = document.getElementById('instruction-note');
-                        if (note) note.style.display = 'none';
+                    // This runs your Masterpiece logic
+                    if (typeof triggerRadar === "function") {
+                        triggerRadar(captured);
                     }
+                    
+                    // Hide the 'Welcome' note
+                    const note = document.getElementById('instruction-note');
+                    if (note) note.style.display = 'none';
                 }
             }
-        }, 300);
+        }, 250); // Checking 4 times per second for maximum responsiveness
         
         
         function triggerRadar(name) {
