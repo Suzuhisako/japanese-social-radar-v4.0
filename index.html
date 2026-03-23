@@ -13,6 +13,11 @@
             height: 100vh;
             overflow: hidden; /* This keeps the whole screen from scrolling */
         }
+
+        .logo-area {
+            display: flex;
+            align-items: baseline; /* Keeps the bottom of the letters aligned */
+        }
         
         .main-container {
             display: flex;
@@ -64,13 +69,14 @@
         .chart-section {
             flex: 4; 
             background: #fdfdfd; 
-            display: flex;           /* Turns on the centering engine */
-            align-items: center;     /* Centers vertically (top to bottom) */
-            justify-content: center; /* Centers horizontally (left to right) */
-            height: 100%;            /* Fills the full height of the container */
+            display: flex;           
+            align-items: center;     
+            justify-content: center; 
+            height: 100%;          
             position: relative;
-            padding: 0;              /* Removes any lopsided padding */
-            pointer-events: none; /* Allows clicks to pass through the empty background */
+            padding: 0; 
+            /* pointer-events: none;  <-- DELETE THIS LINE to allow clicks! */
+            pointer-events: auto;    /* This ensures you can click the rings */
         }
         
         
@@ -84,6 +90,8 @@
             border-left: 2px solid #d4af37; 
             overflow-y: auto;
             box-shadow: -10px 0 20px rgba(0,0,0,0.03);
+            position: relative; 
+            z-index: 10;
         }
 
         .analysis-header {
@@ -138,10 +146,17 @@
             box-shadow: none !important;
         }
 
-                /* Ensure the chart doesn't shift when the popup "opens" */
+                
+        /* Ensure the Flourish embed takes up the space it needs */
         .flourish-embed {
-            position: relative;
-            z-index: 1;
+            width: 90%;              /* Give it some breathing room */
+            height: auto;
+            min-height: 600px;
+        }
+
+        .flourish-embed iframe {
+            width: 100% !important;
+            height: 600px !important;
         }
         
         /* Update your CSS to this "Super-Target" version */
@@ -296,19 +311,22 @@
         };
 
 
-       // 1. This function runs every time the URL #hash changes
-        window.addEventListener('hashchange', function() {
-            const hash = window.location.hash; // e.g., "#phrase=zenshoshima"
-            
-            if (hash.includes('#phrase=')) {
-                const phrase = hash.split('#phrase=')[1];
-                console.log("🎯 URL Hash Triggered:", phrase);
+       window.addEventListener('message', function(e) {
+            // 1. Log the heartbeat
+            if (e.data.method === 'resize') return; // Ignore resize noise
+            console.log("Flourish Signal:", e.data);
+        
+            // 2. Look for the 'triggerPopup' - this is the "official" handshake
+            if (e.data && e.data.method === 'triggerPopup') {
+                const data = e.data.data || {};
                 
-                // Run your Masterpiece analysis
-                triggerRadar(phrase);
-                
-                // Optional: Clear the hash so the back button works normally
-                history.replaceState(null, null, ' ');
+                // Flourish puts the phrase in the first column of your data (usually 'label')
+                const phrase = data.label || data.name || data.Phrase;
+        
+                if (phrase) {
+                    console.log("🎯 Phrase Captured:", phrase);
+                    triggerRadar(phrase.trim());
+                }
             }
         });
         
