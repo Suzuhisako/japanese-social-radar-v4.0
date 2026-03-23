@@ -283,16 +283,15 @@
 
 
         window.addEventListener('message', function(e) {
+            console.log("System Check: Message Detected", e.data);
             if (e.data && e.data.type === 'click') {
                 // 1. Get the phrase from Flourish
                 const phrase = e.data.data.label || e.data.data.name;
 
-                alert("Flourish is sending: " + phrase);
+            　　alert("Flourish is sending: " + phrase);
                 
-                // 2. Trigger the "Masterpiece" update
-                if (phrase) {
-                    triggerRadar(phrase);
-                }
+            　　triggerRadar(phrase);
+                
             }
         });
 
@@ -353,7 +352,7 @@
         }
     </script>
 
-    <script src="https://public.flourish.studio/resources/embed.js"></script>
+    
 
 </body>
 </html>
