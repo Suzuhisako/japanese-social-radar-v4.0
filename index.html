@@ -143,12 +143,11 @@
         }
 
         /* Make the Flourish popup invisible so the user only sees the Sidebar update */
+        /* This hides the popup bubble while allowing the data to reach your script */
         .flourish-popup {
-            opacity: 0 !important;
+            display: none !important;
+            visibility: hidden !important;
             pointer-events: none !important;
-            height: 0px !important;
-            width: 0px !important;
-            overflow: hidden !important;
         }
 
         /* Mobile Adjustments */
@@ -292,19 +291,21 @@
 
 
        window.addEventListener('message', function(e) {
-            // 1. Log to see if the message is coming through
-            console.log("Message Received:", e.data);
+            // 1. Always log to see the raw data structure
+            console.log("Raw Flourish Data:", e.data);
         
-            // 2. Catch the message from your JavascriptTrigger column
-            if (e.data && e.data.type === 'click') {
-                const phrase = e.data.data.label;
-                triggerRadar(phrase);
+            // 2. Look for the 'triggerPopup' method (standard for Sunburst)
+            if (e.data && e.data.method === 'triggerPopup') {
                 
-                // 3. OPTIONAL: Tell Flourish to close the popup now that we have the data
-                // This keeps the UI clean
-                const flourishIframe = document.querySelector('iframe');
-                if (flourishIframe) {
-                    flourishIframe.contentWindow.postMessage({ type: 'close_popup' }, '*');
+                // 3. Extract the phrase from the 'data' or 'model' object
+                const flourishData = e.data.data || e.data.model || {};
+                
+                // We check for 'Phrase', 'label', or 'name'
+                const phrase = flourishData.Phrase || flourishData.label || flourishData.name;
+        
+                if (phrase) {
+                    console.log("Found Phrase in Popup:", phrase);
+                    triggerRadar(phrase.trim());
                 }
             }
         });
