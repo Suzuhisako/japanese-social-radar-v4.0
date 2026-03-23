@@ -283,15 +283,19 @@
 
 
         window.addEventListener('message', function(e) {
+            // 1. Log everything so we can see the hidden data
             console.log("System Check: Message Detected", e.data);
-            if (e.data && e.data.type === 'click') {
-                // 1. Get the phrase from Flourish
-                const phrase = e.data.data.label || e.data.data.name;
-
-            　　alert("Flourish is sending: " + phrase);
+        
+            // 2. Look for the 'click' type OR the 'triggerPopup' method
+            if (e.data && (e.data.type === 'click' || e.data.method === 'triggerPopup')) {
                 
-            　　triggerRadar(phrase);
-                
+                // Flourish sometimes hides the label inside 'data' or 'model'
+                const phrase = e.data.data?.label || e.data.model?.label || e.data.data?.name;
+        
+                if (phrase) {
+                    console.log("Target Acquired:", phrase);
+                    triggerRadar(phrase);
+                }
             }
         });
 
