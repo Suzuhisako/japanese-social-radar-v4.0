@@ -310,29 +310,22 @@
         };
 
 
-        // 1. Listen for ALL clicks on the page
-        window.addEventListener('click', function(e) {
-            // 2. Wait a tiny bit for Flourish to update its popup
-            setTimeout(() => {
-                // 3. Look inside the Flourish Popup for your Phrase
-                // Flourish puts custom content inside these specific classes
-                const popup = document.querySelector('.flourish-popup-content-inner');
+        window.addEventListener('message', function(e) {
+            // 1. Log everything to find the hidden data
+            console.log("System Heartbeat:", e.data);
+        
+            // 2. Look for the triggerPopup (Standard) OR the info (Fallback)
+            if (e.data && (e.data.method === 'triggerPopup' || e.data.type === 'info')) {
+                const data = e.data.data || e.data.model || {};
                 
-                if (popup) {
-                    // Get the text (e.g., "Analyzing: zenshoshima")
-                    const fullText = popup.innerText;
-                    
-                    // Clean the text to get just the 10-character key
-                    // This looks for your "zenshoshima" style keys
-                    const match = fullText.match(/[a-z]{10}/); 
-                    
-                    if (match) {
-                        const phrase = match[0];
-                        console.log("🎯 Manual Capture Success:", phrase);
-                        triggerRadar(phrase);
-                    }
+                // We look for 'label' which is the default Sunburst phrase column
+                const phrase = data.label || data.name || data.Phrase;
+        
+                if (phrase) {
+                    console.log("🎯 Connection Restored:", phrase);
+                    triggerRadar(phrase.trim());
                 }
-            }, 200); // 200ms delay gives the popup time to load
+            }
         });
         
         
