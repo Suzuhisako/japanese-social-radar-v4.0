@@ -142,10 +142,13 @@
             line-height: 1.6;
         }
 
-        /* Hide the popup bubble but keep it functional */
+        /* Hide the popup visually but keep it in the "DOM" so Flourish doesn't crash */
         .flourish-popup {
+            visibility: hidden !important;
             opacity: 0 !important;
             pointer-events: none !important;
+            max-height: 0px !important;
+            max-width: 0px !important;
         }
         
         /* Ensure the link inside the popup triggers automatically */
@@ -297,14 +300,24 @@
 
 
         window.addEventListener('message', function(e) {
-            console.log("Bridge Check:", e.data);
+            // 1. Log the data - we are looking for 'snapshot' or 'info'
+            console.log("Flourish Heartbeat:", e.data);
         
-            // This catches the specific 'phrase' property from your new Link string
-            if (e.data && e.data.type === 'click' && e.data.phrase) {
-                console.log("🎯 Match Found:", e.data.phrase);
-                triggerRadar(e.data.phrase);
+            // 2. The 'triggerPopup' method is the most reliable for Sunburst
+            if (e.data && e.data.method === 'triggerPopup') {
+                
+                // Flourish sends the data of the active slice here
+                const sliceData = e.data.data || {};
+                
+                // We check your 'Link' column or 'Label' column
+                const phrase = sliceData.Link || sliceData.label || sliceData.name;
+        
+                if (phrase && phrase !== "undefined") {
+                    console.log("🎯 Analysis Target:", phrase);
+                    triggerRadar(phrase.trim());
+                }
             }
-        });;
+        });
 
         function triggerRadar(name) {
             const summaryBox = document.getElementById('ai-summary');
