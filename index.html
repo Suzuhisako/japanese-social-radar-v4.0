@@ -73,19 +73,7 @@
             pointer-events: none; /* Allows clicks to pass through the empty background */
         }
         
-        /* THE RINGS (INSIDE THE GALLERY) */
-        .flourish-embed {
-            width: 90% !important;   /* Uses 90% of the available LEFT space */
-            max-width: 1000px;       /* Prevents it from getting too massive */
-            margin: 0 auto !important; /* Forces equal margins on left and right */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            pointer-events: auto; /* Re-enables clicks for the actual chart and popups */
-            position: relative;
-            z-index: 10;
-        }
-
+        
         /* THE ANALYSIS SIDEBAR (THE RIGHT SIDE) */
         .info-section {
             flex: 1; 
@@ -142,20 +130,29 @@
             line-height: 1.6;
         }
 
-        /* Hide the popup visually but keep it in the "DOM" so Flourish doesn't crash */
+        /* Make the Flourish popup invisible but keep the <a> link active */
         .flourish-popup {
-            visibility: hidden !important;
             opacity: 0 !important;
-            pointer-events: none !important;
-            max-height: 0px !important;
-            max-width: 0px !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+                /* Ensure the chart doesn't shift when the popup "opens" */
+        .flourish-embed {
+            position: relative;
+            z-index: 1;
         }
         
-        /* Ensure the link inside the popup triggers automatically */
+        /* Update your CSS to this "Super-Target" version */
         .flourish-popup-content a {
-            display: block;
-            width: 100%;
-            height: 100%;
+            display: block !important;
+            width: 100% !important;
+            height: 100% !important;
+            min-width: 150px; /* Ensures a clickable area even for small slices */
+            min-height: 50px;
+            text-decoration: none !important;
+            color: transparent !important; /* Keeps the text invisible */
         }
         
 
@@ -299,26 +296,23 @@
         };
 
 
-        window.addEventListener('message', function(e) {
-            // 1. Log the data - we are looking for 'snapshot' or 'info'
-            console.log("Flourish Heartbeat:", e.data);
-        
-            // 2. The 'triggerPopup' method is the most reliable for Sunburst
-            if (e.data && e.data.method === 'triggerPopup') {
+       // 1. This function runs every time the URL #hash changes
+        window.addEventListener('hashchange', function() {
+            const hash = window.location.hash; // e.g., "#phrase=zenshoshima"
+            
+            if (hash.includes('#phrase=')) {
+                const phrase = hash.split('#phrase=')[1];
+                console.log("🎯 URL Hash Triggered:", phrase);
                 
-                // Flourish sends the data of the active slice here
-                const sliceData = e.data.data || {};
+                // Run your Masterpiece analysis
+                triggerRadar(phrase);
                 
-                // We check your 'Link' column or 'Label' column
-                const phrase = sliceData.Link || sliceData.label || sliceData.name;
-        
-                if (phrase && phrase !== "undefined") {
-                    console.log("🎯 Analysis Target:", phrase);
-                    triggerRadar(phrase.trim());
-                }
+                // Optional: Clear the hash so the back button works normally
+                history.replaceState(null, null, ' ');
             }
         });
-
+        
+        
         function triggerRadar(name) {
             const summaryBox = document.getElementById('ai-summary');
             const instruction = document.getElementById('instruction-note');
