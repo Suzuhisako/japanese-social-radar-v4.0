@@ -180,6 +180,28 @@
                 display: block; /* Puts the label on its own tiny line */
                 margin-bottom: 2px;
             }
+
+            /* 1. Force the Flourish popup container to respect the screen width */
+            .flourish-popup {
+                max-width: 85vw !important; /* Prevents the popup from being wider than the phone */
+            }
+        
+            /* 2. Target the Japanese phrases (H2 and P tags) inside your custom popup */
+            .flourish-popup h2, 
+            .flourish-popup p {
+                word-wrap: break-word !important; /* Forces long words to wrap to the next line */
+                overflow-wrap: break-word !important;
+                white-space: normal !important;   /* Prevents the text from staying on one long line */
+                font-size: 1.1rem !important;      /* Shrinks the font slightly for long phrases */
+                line-height: 1.2 !important;
+                margin-bottom: 8px !important;
+            }
+        
+            /* 3. If you have a specific long Japanese phrase in a header */
+            .flourish-popup h2 {
+                font-size: 1.3rem !important; 
+                font-weight: bold !important;
+            }
         }
     </style>
 </head>
