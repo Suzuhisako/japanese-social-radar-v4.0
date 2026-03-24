@@ -1,416 +1,298 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Japanese Social Radar | AI Cultural Analysis</title>
+    <title>Japanese Social Radar V4.0</title>
     <style>
-        
         body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
             margin: 0;
+            background-color: #f4f4f9;
             display: flex;
             flex-direction: column;
             height: 100vh;
-            overflow: hidden; /* This keeps the whole screen from scrolling */
+            overflow: hidden;
         }
 
-        .logo-area {
-            display: flex;
-            align-items: baseline; /* Keeps the bottom of the letters aligned */
+        header {
+            background-color: #1a1a1a;
+            color: #d4af37;
+            padding: 10px;
+            text-align: center;
+            flex-shrink: 0;
+            height: 90px
         }
-        
+
         .main-container {
             display: flex;
-            flex: 1; /* This tells the map/sidebar to take ALL remaining space */
-            overflow: hidden; 
+            flex: 1;
+            flex-direction: row;
+            overflow: hidden;
         }
 
-        .master-header {
-            background-color: #ffffff;
-            padding: 5px 30px; /* Minimal vertical padding */
-            border-bottom: 2px solid #d4af37;
-            display: flex;
-            align-items: center; /* Aligns everything on one horizontal line */
-            justify-content: flex-start; /* Keeps everything to the left */
-            height: 45px; /* Forced slim height */
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .master-header h1 {
-            margin: 0;
-            font-size: 1.1rem; /* Smaller font to fit on one line */
-            letter-spacing: 2px;
-            color: #222;
-            white-space: nowrap; /* Prevents text from wrapping to a second line */
-        }
-
-        .subtitle {
-            margin: 0 0 0 20px; /* Pushes the subtitle to the right of the title */
-            font-size: 0.7rem;
-            color: #999;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            white-space: nowrap;
-        }
-
-        .version-tag {
-            font-size: 0.65rem;
-            color: #d4af37;
-            border: 1px solid #d4af37;
-            padding: 1px 5px;
-            margin-left: 10px;
-            border-radius: 3px;
-            font-weight: bold;
-        }
-        
-             
-       /* 1. LOCK THE CONTAINER */
+        /* Simplified Chart Section - No more Iframe CSS! */
         .chart-section {
-            flex: 4; 
-            background: #fdfdfd; 
-            display: flex;           
-            align-items: center;     
-            justify-content: center; 
-            height: 100%;           /* Fills the main-container */
-            min-height: 700px;      /* FORCE at least 700px */
+            flex: 3;
+            background: white;
             position: relative;
-            padding: 0; 
-            pointer-events: auto;    
+            min-height: 400px; /* Forces space for the map */
         }
-        
-        
-        /* THE ANALYSIS SIDEBAR (THE RIGHT SIDE) */
+
         .info-section {
-            flex: 1; 
-            min-width: 350px;
-            max-width: 450px;
+            flex: 1;
+            max-width: 400px;
             padding: 40px;
             background-color: #ffffff;
-            border-left: 2px solid #d4af37; 
+            border-left: 2px solid #d4af37; /* The Gold Standard Line */
             overflow-y: auto;
-            box-shadow: -10px 0 20px rgba(0,0,0,0.03);
-            position: relative; 
-            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.05);
         }
 
-        .analysis-header {
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 25px;
-        }
-
-        .analysis-header h2 {
-            color: #d4af37;
-            margin: 0;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        
-        /* 4. The Analysis Text */
         #ai-summary {
-            font-size: 1.15rem;
-            line-height: 1.8;
-            color: #2c3e50;
-            font-family: 'Georgia', serif;
+            font-size: 1.1rem;
+            line-height: 1.8; /* More space between lines for readability */
+            color: #333;
+            font-family: 'Georgia', serif; /* A classic, professional font for analysis */
+            margin-top: 20px;
             font-style: italic;
-            /*transition: opacity 0.3s ease;*/
-            animation: fadeIn 0.5s;
-            transition: all 0.5s ease-in-out;
+            transition: all 0.5s ease; /* Smooth fade when text changes */
         }
 
-        /* This class will be toggled by the script */
-        .updated-text {
-            animation: slideIn 0.6s ease-out;
+        /* 1. Standard Desktop View */
+        .flourish-iframe-bridge {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* Mobile Polish */
+        @media (max-width: 768px) {
+            .info-section {
+                max-width: 100%;
+                padding: 25px;
+                border-left: none;
+                border-top: 3px solid #d4af37;
+            }
+            #ai-summary {
+                font-size: 1rem;
+            }
         }
 
        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        #instruction-note {
-            color: #999;
-            font-size: 1rem;
-            line-height: 1.6;
-        }
-
-        /* 2. LOCK THE EMBED DIV */
-        .flourish-embed {
-            width: 95% !important;
-            height: 700px !important; /* LOCK THIS HEIGHT */
-            display: block !important;
-        }
-        
-         /* Keep this so the script can "read" the text inside */
-        .flourish-popup {
-            visibility: hidden !important; /* Hidden from eyes */
-            opacity: 0 !important;         /* 100% transparent */
-            pointer-events: none !important; /* Doesn't block clicks */
-        }
-        
-        /* 3. LOCK THE IFRAME ITSELF */
-        .flourish-embed iframe {
-            width: 100% !important;
-            height: 700px !important; /* LOCK THIS HEIGHT */
-            max-height: 700px !important;
-            border: none;
-        }
-        
-        /* Update your CSS to this "Super-Target" version */
-        .flourish-popup-content a {
-            display: block !important;
-            width: 100% !important;
-            height: 100% !important;
-            min-width: 150px; /* Ensures a clickable area even for small slices */
-            min-height: 50px;
-            text-decoration: none !important;
-            color: transparent !important; /* Keeps the text invisible */
-        }
-        
-
-        /* Mobile Adjustments */
         @media (max-width: 768px) {
-            body { overflow: auto; }
-            .main-container { flex-direction: column; }
-            .chart-section { height: 65vh; width: 100vw; flex: none; }
-            .info-section { max-width: 100%; border-left: none; border-top: 3px solid #d4af37; }
+            body { 
+                overflow: auto; 
+            }
+            .main-container { 
+                flex-direction: column; 
+            }
+            .chart-section { 
+                height: 60vh; /* Map height on mobile */
+                width: 100vw; 
+                flex: none; 
+            }
+            .flourish-iframe-bridge {
+                height: 100%; /* Fills the 60vh chart-section */
+            }
+            .info-section { 
+                max-width: 100%; 
+                border-left: none; 
+                border-top: 2px solid #d4af37; 
+                padding-bottom: 50px; 
+            }
+        }
+
+        .audio-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #d4af37;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
-    <header class="master-header">
-        <div class="logo-area">
-            <h1>JAPANESE SOCIAL RADAR <span class="version-tag">v4.0</span></h1>
-            <p class="subtitle">A Behavioral Dictionary & Cultural OS</p>
-        </div>
+
+    <header>
+        <h1>Japanese Social Radar V4.0</h1>
+        <p>Reading the "Invisible Air" with Generative AI</p>
     </header>
 
     <div class="main-container">
-        <section class="chart-section">
-            <div class="flourish-embed flourish-sunburst" data-src="visualisation/28074057">
-            <script src="https://public.flourish.studio/resources/embed.js"></script>
+        <section class="chart-section" style="width: 100%; max-width: 900px; margin: 0 auto;">
+            <iframe src="https://flo.uri.sh/visualisation/28074057/embed?auto=1&interaction=true" 
+                    class="flourish-iframe-bridge"
+                    style="width: 100%; height: 650px; border: none;"
+                    allow="autoplay">
+            </iframe>
         </section>
 
         <section class="info-section">
-            <div id="ai-summary">
-                <div id="instruction-note">
-                    <p>Welcome to the Cultural OS v4.0.</p>
-                    <p>Select a phrase on the Social Radar to begin the analysis.</p>
-                </div>
-            </div>                      
+            <div id="instruction-note" style="padding: 15px; background: #fdfdfd; border: 1px dashed #ccc; border-radius: 8px; margin-bottom: 20px;">
+                <h3>Explore the Social Radar</h3>
+                <p>Hover over a slice to hear the phrase in Japanese with nuances. The cultural analysis will appear below.</p>
+            </div>
+            
+            <div class="analysis-card" style="padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 5px solid #007bff;">
+                <h3 style="margin-top: 0; color: #007bff;">AI Cultural Summary</h3>
+                <p id="ai-summary" style="font-size: 1.1em; line-height: 1.6; color: #333; min-height: 100px;">
+                    <i>Waiting for selection...</i>
+                </p>
+            </div>
         </section>
-    </div>       
+    </div>
 
     <script>
-        // THE DATA MIRROR (Your 20 Masterpiece Analyses)
+        // 1. Your Master Data
         const radarData = {
+            
             "zenshoshi": {
-                fullTitle: "善処します (Zenshoshimasu)",
+                title: "善処します (Zenshoshimasu)",
                 audioUrl: "audio/zensho.wav",
-                content: "In business, this is a polite 'I will look into it,' but often functions as a way to end a negotiation without a 'Yes.' It maintains harmony while avoiding commitment."
+                analysis: "In business, this is a polite 'I will look into it,' but often functions as a way to end a negotiation without a 'Yes.' It maintains harmony while avoiding commitment."
             },
             "kentoukada": {
-                fullTitle: "検討課題とさせていただきます (Kentoukadaitosaseteitadakimasu)",
+                title: "検討課題とさせていただきます (Kentoukadaitosaseteitadakimasu)",
                 audioUrl: "audio/kentou.wav",
-                content: "Literally 'making it a matter for consideration.' This signals that the proposal has hit a significant roadblock in the hierarchy."
+                analysis: "Literally 'making it a matter for consideration.' This signals that the proposal has hit a significant roadblock in the hierarchy."
             },
             "muzukashii": {
-                fullTitle: "ちょっと難しい (Chottomuzukashii)",
+                title: "ちょっと難しい (Chottomuzukashii)",
                 audioUrl: "audio/muzukashii.wav",
-                content: "A textbook 'Soft No.' In the Cultural OS, 'difficult' means 'impossible,' and 'chotto' is the shock absorber for the listener."
+                analysis: "A textbook 'Soft No.' In the Cultural OS, 'difficult' means 'impossible,' and 'chotto' is the shock absorber for the listener."
             },
             "maemukini": {
-                fullTitle: "前向きに検討いたします (Maemukinikentouitashimausu)",
+                title: "前向きに検討いたします (Maemukinikentouitashimausu)",
                 audioUrl: "audio/maemuki.wav",
-                content: "A positive-sounding buffer that effectively delays a decision. It keeps the relationship warm without requiring immediate action."
+                analysis: "A positive-sounding buffer that effectively delays a decision. It keeps the relationship warm without requiring immediate action."
             },
             "yoroshiku": {
-                fullTitle: "よろしくね (Yoroshikune)",
+                title: "よろしくね (Yoroshikune)",
                 audioUrl: "audio/yoroshiku.wav",
-                content: "The casual but firm version of 'Yoroshiku.' Used by superiors to signal that a task is now the subordinate's responsibility."
+                analysis: "The casual but firm version of 'Yoroshiku.' Used by superiors to signal that a task is now the subordinate's responsibility."
             },
             "goikenouka": {
-                fullTitle: "ご意見を伺いたい (Goikenoukagaitai)",
+                title: "ご意見を伺いたい (Goikenoukagaitai)",
                 audioUrl: "audio/goiken.wav",
-                content: "A vertical invitation for feedback. While it asks for an opinion, it acknowledges the status gap by using humble-polite phrasing."
+                analysis: "A vertical invitation for feedback. While it asks for an opinion, it acknowledges the status gap by using humble-polite phrasing."
             },
             "sekinino": {
-                fullTitle: "責任を痛感し (Sekininotsukanshi)",
+                title: "責任を痛感し (Sekininotsukanshi)",
                 audioUrl: "audio/tsukan.wav",
-                content: "A heavy phrase used in formal accountability. It signals that the speaker 'keenly feels the responsibility' of a failure."
+                analysis: "A heavy phrase used in formal accountability. It signals that the speaker 'keenly feels the responsibility' of a failure."
             },
             "isoganaktu": {
-                fullTitle: "急がなくていいです (Isoganakuteiidesu)",
+                title: "急がなくていいです (Isoganakuteiidesu)",
                 audioUrl: "audio/isoganakute.wav",
-                content: "Depending on context, this is either genuine kindness or a sign that the project has lost priority in the eyes of leadership."
+                analysis: "Depending on context, this is either genuine kindness or a sign that the project has lost priority in the eyes of leadership."
             },
             "aruimide": {
-                fullTitle: "ある意味で (Aruimide)",
+                title: "ある意味で (Aruimide)",
                 audioUrl: "audio/aruimi.wav",
-                content: "A conversational pivot. It allows the speaker to introduce a conflicting view by framing it as just 'one way' of looking at things."
+                analysis: "A conversational pivot. It allows the speaker to introduce a conflicting view by framing it as just 'one way' of looking at things."
             },
             "gokaiooso": {
-                fullTitle: "誤解を恐れずに (Gokaioosorezuni)",
+                title: "誤解を恐れずに (Gokaioosorezuni)",
                 audioUrl: "audio/gokai.wav",
-                content: "The 'Directness Shield.' The speaker is warning you that they are about to break social protocol and speak bluntly."
+                analysis: "The 'Directness Shield.' The speaker is warning you that they are about to break social protocol and speak bluntly."
             },
             "korewakore": {
-                fullTitle: "これはこれで (Korewakorede)",
+                title: "これはこれで (Korewakorede)",
                 audioUrl: "audio/korewa.wav",
-                content: "Implies that while the current result is acceptable, it is separate from the original goal. A subtle form of disappointment."
+                analysis: "Implies that while the current result is acceptable, it is separate from the original goal. A subtle form of disappointment."
             },
             "kikudake": {
-                fullTitle: "聞くだけ聞きます (Kikudakekikimasu)",
+                title: "聞くだけ聞きます (Kikudakekikimasu)",
                 audioUrl: "audio/kikudake.wav",
-                content: "A boundary phrase. The speaker will listen out of politeness, but they are signaling they have no power or intent to change the outcome."
+                analysis: "A boundary phrase. The speaker will listen out of politeness, but they are signaling they have no power or intent to change the outcome."
             },
             "maatamata": {
-                fullTitle: "まあ、たまたま (Maa,tamatama)",
+                title: "まあ、たまたま (Maa,tamatama)",
                 audioUrl: "audio/tamatama.wav",
-                content: "The 'Humility OS.' Attributing success to luck ('tamatama') prevents the speaker from standing out too much from the group."
+                analysis: "The 'Humility OS.' Attributing success to luck ('tamatama') prevents the speaker from standing out too much from the group."
             },
             "maasoudesu": {
-                fullTitle: "まあ、そうですね (Maa,soudesune)",
+                title: "まあ、そうですね (Maa,soudesune)",
                 audioUrl: "audio/soudesune.wav",
-                content: "The ultimate neutral filler. It acknowledges the other person's statement without agreeing, disagreeing, or committing to a thought."
+                analysis: "The ultimate neutral filler. It acknowledges the other person's statement without agreeing, disagreeing, or committing to a thought."
             },
             "wakarima": {
-                fullTitle: "わかりました (Wakarimashita)",
+                title: "わかりました (Wakarimashita)",
                 audioUrl: "audio/wakarimashita.wav",
-                content: "Signifies receipt of information, not agreement. A critical distinction in the Japanese Social Radar."
+                analysis: "Signifies receipt of information, not agreement. A critical distinction in the Japanese Social Radar."
             },
             "iroiroari": {
-                fullTitle: "いろいろありまして (Iroiroarimashite)",
+                title: "いろいろありまして (Iroiroarimashite)",
                 audioUrl: "audio/iroiro.wav",
-                content: "A polite way to close off personal or difficult topics. It translates to 'various things happened,' signaling: 'Please don't ask more.'"
+                analysis: "A polite way to close off personal or difficult topics. It translates to 'various things happened,' signaling: 'Please don't ask more.'"
             },
             "oisogashii": {
-                fullTitle: "お忙しいところ (Oisogashiitokoro)",
+                title: "お忙しいところ (Oisogashiitokoro)",
                 audioUrl: "audio/oisogashii.wav",
-                content: "The standard 'Opening Lubricant.' It acknowledges the other person's value by assuming they are busy and important."
+                analysis: "The standard 'Opening Lubricant.' It acknowledges the other person's value by assuming they are busy and important."
             },
             "kouiumono": {
-                fullTitle: "こういう者ですが (Kouiumonodesuga)",
+                title: "こういう者ですが (Kouiumonodesuga)",
                 audioUrl: "audio/kouiu.wav",
-                content: "Used during Meishi-koukan (business card exchange). It frames the speaker as 'someone like this,' a traditional humble posture."
+                analysis: "Used during Meishi-koukan (business card exchange). It frames the speaker as 'someone like this,' a traditional humble posture."
             },
             "benkyousa": {
-                fullTitle: "勉強させてください (Benkyousasetekudasai)",
+                title: "勉強させてください (Benkyousasetekudasai)",
                 audioUrl: "audio/benkyou.wav",
-                content: "The polite negotiator's code for: 'Please give me a discount' or 'Please lower the price so I can learn from this deal.'"
+                analysis: "The polite negotiator's code for: 'Please give me a discount' or 'Please lower the price so I can learn from this deal.'"
             },
             "souiukoto": {
-                fullTitle: "そういうことなら (Souiukotonara)",
+                title: "そういうことなら (Souiukotonara)",
                 audioUrl: "audio/souiu.wav",
-                content: "Signals the transition from 'Negotiation' to 'Agreement.' It indicates the logic has been accepted and the deal is moving forward."
+                analysis: "Signals the transition from 'Negotiation' to 'Agreement.' It indicates the logic has been accepted and the deal is moving forward."
             }
         };
+           
+           
+       window.addEventListener('message', function(e) {
+            // 1. Safety Check: Only act if the button sends a 'phrase'
+            if (e.data && e.data.phrase) {
+                const key = e.data.phrase.trim().toLowerCase();
+                const entry = radarData[key];
 
-
-        // 1. TRACK THE ACTIVE SELECTION
-        window.lastCapturedPhrase = "";
-        
-        // 2. THE DEEP-SCRAPER LOOP
-        setInterval(function() {
-            // Target the specific inner container Flourish uses for popups
-            const popupContent = document.querySelector('.flourish-popup-content-inner');
-            
-            if (popupContent) {
-                const text = popupContent.innerText;
-                
-                // Logic: Find the word immediately following the label "Phrase"
-                let captured = "";
-                if (text.includes("Phrase")) {
-                    // Split by "Phrase", take the second half, trim, and take the first word
-                    captured = text.split("Phrase")[1].trim().split(/\s+/)[0];
-                } else {
-                    // Fallback: Just grab any word 4+ characters long
-                    const match = text.match(/[a-z]{4,}/i);
-                    if (match) captured = match[0];
-                }
-        
-                // 3. TRIGGER THE RADAR IF IT'S A NEW PHRASE
-                if (captured && captured !== window.lastCapturedPhrase) {
-                    window.lastCapturedPhrase = captured;
-                    console.log("🎯 Deep-Scrape Success:", captured);
+                if (entry) {
+                    console.log("🎯 Masterpiece Analysis Triggered:", key);
+                    const summaryElement = document.getElementById('ai-summary');
                     
-                    // Execute your analysis function
-                    if (typeof triggerRadar === "function") {
-                        triggerRadar(captured);
-                    }
-                    
-                    // Hide the 'Welcome' message
+                    // 2. Clear the 'Welcome' note
                     const note = document.getElementById('instruction-note');
                     if (note) note.style.display = 'none';
-                }
-            }
-        }, 250);
-        
-        
-        function triggerRadar(name) {
-            const summaryBox = document.getElementById('ai-summary');
-            const instruction = document.getElementById('instruction-note');
-            
-            // UI Feedback: Start "Thinking" effect
-            if (instruction) instruction.style.display = 'none';
-            summaryBox.style.opacity = "0.5";
-            summaryBox.innerHTML = `<div style="color: #d4af37;">🔍 Analyzing subtext for "${name}"...</div>`;
 
-            setTimeout(() => {
-                const cleanName = name.trim().toLowerCase();
-                
-                // 3. Find the key in radarData (Case-insensitive match)
-                const key = Object.keys(radarData).find(k => k.toLowerCase() === cleanName);
-
-                if (key && radarData[key]) {
-                    const data = radarData[key];
-                    summaryBox.style.opacity = "1";
-                    
-                    // 4. Inject the FULL Masterpiece Layout
-                    summaryBox.innerHTML = `
-                        <div class="analysis-header" style="animation: fadeIn 0.5s;">
-                            <h2 style="color: #d4af37; font-size: 1.2rem; margin-bottom: 5px;">${data.fullTitle}</h2>
-                            <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">
-                                Cultural OS Analysis
+                    // 3. Build the Sidebar Content
+                    summaryElement.innerHTML = `
+                        <div class="updated-text">
+                            <div class="analysis-header">
+                                <h2>${entry.title}</h2>
                             </div>
                             
-                            <audio controls style="width: 100%; margin-bottom: 20px; height: 35px;">
-                                <source src="${data.audioUrl}" type="audio/wav">
-                                Your browser does not support audio.
-                            </audio>
-                        </div>
-                        <div class="analysis-body" style="font-family: 'Georgia', serif; line-height: 1.8; font-style: italic; color: #2c3e50; font-size: 1.1rem;">
-                            ${data.content}
+                            <div class="audio-container" style="margin: 20px 0; background: #f9f9f9; padding: 15px; border-radius: 8px; border-left: 4px solid #d4af37;">
+                                <p style="font-size: 0.8rem; color: #888; margin-bottom: 8px; text-transform: uppercase;">Audio Nuance</p>
+                                <audio controls src="${entry.audioUrl}" style="width: 100%; height: 35px;"></audio>
+                            </div>
+
+                            <div class="analysis-body" style="font-family: 'Georgia', serif; line-height: 1.8; color: #2c3e50;">
+                                ${entry.analysis}
+                            </div>
                         </div>
                     `;
-
-                    // 5. Reset animations and scroll
-                    summaryBox.classList.remove('updated-text');
-                    void summaryBox.offsetWidth; 
-                    summaryBox.classList.add('updated-text');
-                    summaryBox.closest('.info-section').scrollTop = 0;
-
-                    // 6. Mobile Auto-Scroll
-                    if (window.innerWidth <= 768) {
-                        summaryBox.scrollIntoView({ behavior: 'smooth' });
-                    }
-                    
-                    console.log("✅ Radar Updated:", key);
                 } else {
-                    summaryBox.style.opacity = "1";
-                    summaryBox.innerHTML = `⚠️ No analysis found for "${name}". Check if the key matches radarData exactly.`;
+                    console.warn("⚠️ Data not found for:", key);
                 }
-            }, 400); 
-        }
+            }
+        });
     </script>
 
     <script src="https://public.flourish.studio/resources/embed.js"></script>
-
-    
 
 </body>
 </html>
