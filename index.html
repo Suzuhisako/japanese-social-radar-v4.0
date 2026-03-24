@@ -74,13 +74,15 @@
         }
 
         #ai-summary {
-            font-size: 1.1rem;
-            line-height: 1.8; /* More space between lines for readability */
-            color: #333;
-            font-family: 'Georgia', serif; /* A classic, professional font for analysis */
-            margin-top: 20px;
-            font-style: italic;
-            transition: all 0.5s ease; /* Smooth fade when text changes */
+            min-height: 200px; /* Ensures the sidebar doesn't jump when loading */
+            margin-bottom: 20px;
+        }
+        
+        #sidebar-footer {
+            position: sticky; /* Optional: keeps it at the bottom of the sidebar */
+            bottom: 0;
+            background: white; /* Matches your sidebar background */
+            padding-bottom: 10px;
         }
 
         /* 1. Standard Desktop View */
@@ -92,19 +94,7 @@
         }
 
         /* Mobile Polish */
-        @media (max-width: 768px) {
-            .info-section {
-                max-width: 100%;
-                padding: 25px;
-                border-left: none;
-                border-top: 3px solid #d4af37;
-            }
-            #ai-summary {
-                font-size: 1rem;
-            }
-        }
-
-       
+           
         @media (max-width: 768px) {
             body { 
                 overflow: auto; 
@@ -157,13 +147,22 @@
         <section class="info-section">
             <div id="instruction-note" style="padding: 15px; background: #fdfdfd; border: 1px dashed #ccc; border-radius: 8px; margin-bottom: 20px;">
                 <h3>Explore the Social Radar</h3>
-                <p>Hover a slice to hear the phrase in Japanese with nuances. </p>
+                <p>Hover a slice and click [Read Cultural Analysis] to hear the phrase in Japanese with nuances and read the AI analysis.</p>
             </div>
             
             <div class="analysis-card" style="padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 5px solid #007bff;">
                 <h3 style="margin-top: 0; color: #007bff;">AI Cultural Summary</h3>
                 <p id="ai-summary" style="font-size: 1.1em; line-height: 1.6; color: #333; min-height: 100px;">
                     <i>Waiting for selection...</i>
+                </p>
+            </div>
+
+            <div id="ai-summary"></div>
+
+            <div id="sidebar-footer" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
+                <p style="font-size: 12px; color: #999; line-height: 1.6; font-style: italic;">
+                    <span style="color: #d4af37; font-weight: bold; font-style: normal;">💡 NEXT STEP:</span><br>
+                    To explore a different phrase, simply close the current popup on the radar map.
                 </p>
             </div>
         </section>
