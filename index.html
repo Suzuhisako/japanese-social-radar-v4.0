@@ -181,34 +181,7 @@
                 margin-bottom: 2px;
             }
 
-           /* Target the headers and paragraphs inside the Flourish popup */
-            .flourish-popup h2, 
-            .flourish-popup p,
-            .flourish-popup div {
-                /* This is the magic line for long Romaji */
-                word-break: break-all !important; 
-                
-                /* Ensures the text doesn't try to stay on one line */
-                white-space: normal !important; 
-                
-                /* Limits the width so it doesn't push the popup off-screen */
-                max-width: 100% !important;
-                box-sizing: border-box !important;
-                
-                /* Adjust font for readability when broken */
-                line-height: 1.3 !important;
-                font-size: 1.1rem !important; 
-            }
-        
-            /* Specifically target the H2 if that's where the Romaji title is */
-            .flourish-popup h2 {
-                font-size: 1.2rem !important;
-                margin-bottom: 5px !important;
-            }
-
-            .flourish-popup-content {
-                padding: 10px !important;
-            }
+           
         }
     </style>
 </head>
