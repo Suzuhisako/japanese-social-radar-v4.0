@@ -114,19 +114,27 @@
                 max-width: 100%; 
                 border-left: none; 
                 border-top: 2px solid #d4af37; 
-                padding: 15px;      /* Combines your padding-bottom and the 15px logic */
-                overflow-y: auto;   /* Allows the sidebar to scroll if analysis is long */
-                flex: 1;            /* Ensures it takes up the remaining space */
+                padding: 15px;
+                
+                /* THE MAGIC TRICK: */
+                display: flex;
+                flex-direction: column; /* Stack items vertically */
+                height: 40vh;           /* Give the sidebar a fixed height on mobile */
             }
 
             /* Target the tip specifically for mobile */
+            #ai-summary {
+                flex: 1;                /* This tells the analysis to grow and push the tip down */
+                overflow-y: auto;       /* Only the analysis scrolls, not the tip! */
+                margin-bottom: 10px;
+            }
+
             #sidebar-footer {
-                margin-top: 15px !important; 
-                padding-top: 10px !important;
-                background: #fdfcf0; /* Subtle background to make it stand out even when small */
-                padding: 8px;
+                margin-top: auto;       /* Pushes the footer to the absolute bottom of the flex box */
+                padding: 8px !important;
+                background: #fdfcf0; 
                 border-radius: 5px;
-                border-top: none !important;
+                flex-shrink: 0;         /* Prevents the tip from being squished */
             }
 
             #sidebar-footer p {
